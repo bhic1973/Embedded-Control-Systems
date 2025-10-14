@@ -1,0 +1,7 @@
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+ControlSystems = "a6e380b2-a6ca-5380-bf3e-84a91bcd477e"
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+OhMyREPL = "5fb14364-9ced-5910-84b2-373655c76a03"
