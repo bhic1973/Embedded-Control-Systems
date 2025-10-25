@@ -2,6 +2,11 @@
 title: State space model
 author: Belkebir Hicham
 date: 27-08-2025
+filère: Ingénierie des Systèmes Embarqués et Intelligence Artificielle
+semestre: "3"
+cours: Embedded Control System (ECS)
+institut: École Nationale des Sciences Appliquées de Fès (ENSAF)
+université: Université Sidi Mohammed Bno Abdeallah (USMBA)
 ---
 
 # 1. Introduction
@@ -119,7 +124,10 @@ $$
 We can easily show that:
 $$
 (s\mathrm{I}-\mathrm{A})^{-1}\overset{\mathcal{L}^{-1}}{\Rightarrow}\Phi(t)
-$$With $\Phi(t)$ is the state transition matrix. Then the solution of the state equation is given by:
+$$
+
+With $\Phi(t)$ is the state transition matrix. Then the solution of the state equation is given by:
+
 $$
 \mathbf{q}(t) = \Phi(t)\mathbf{q}_{0}+\int_{0}^{t}\Phi(t-\lambda)\mathrm{B}\mathbf{x}(\lambda)d\lambda
 $$
@@ -162,7 +170,8 @@ $$
 The unforced solution is given by:
 $$
 	\mathbf{q}(t) = \Phi(t)\mathbf{q}_{0}= e^{\mathrm{A}t}\mathbf{q}_{0}=\mathrm{V}e^{\Lambda t}\mathrm{V}^{-1}\mathbf{q}_{0} 
-$$With $\Lambda$ the eigenvalues $\mathrm{A}\text{-matrix}$ and $\mathrm{V}$ the eigenvectors of the $\mathrm{A}\text{-matrix}$.
+$$
+With $\Lambda$ the eigenvalues $\mathrm{A}\text{-matrix}$ and $\mathrm{V}$ the eigenvectors of the $\mathrm{A}\text{-matrix}$.
 
 + **Simulation**
 ```run-python
@@ -315,6 +324,7 @@ $$
 $$
 y(t) = \underbrace{\begin{bmatrix}1&0&0&0\end{bmatrix}}_{\mathrm{C}}\begin{bmatrix}q_{1}\\q_{2}\\q_{3}\\q_{4}\end{bmatrix} + 0x
 $$
+
 ***Exercise***
 Consider a closed-loop transfer function:
 $$
@@ -323,9 +333,19 @@ $$
 1. Figure out the signal flow graph and the blocks diagram using the phase variable canonical form.
 2. Deduce the state space representation of this system.
 
+***Solution***
+![[diag77.svg]]
+
+![[diag78.svg]]
+
+![[diag79.svg]]
+
+
 ## 4.2 Alternative signal flow graph and block diagram models
 Let consider the following open-loop DC motor control system:
-![[Pasted image 20250827125304.png]]
+
+![[dc_motor_blocks_diag_model.jpg]]
+
 The transfer function that relate the output $y(t)$ to the reference signal $r(t)$ is given by:
 $$
 H(s) = 5\frac{1+s^{-1}}{1+5s^{-1}}\times\frac{s^{-1}}{1+2s^{-1}}\times\frac{6s^{-1}}{1+3s^{-1}}
@@ -350,19 +370,26 @@ $$
 \end{cases}
 $$
 Then we can decompose $\mathrm{A}$ like follow:
+
 $$
 A = V\Lambda V^{-1}
-$$ where $V$ is the eigenvector matrix and $\Lambda$ a diagonal matrix formed by the eigenvalues of $\mathrm{A}$. Then we can operate the following transformation:
+$$
+
+Where $V$ is the eigenvector matrix and $\Lambda$ a diagonal matrix formed by the eigenvalues of $\mathrm{A}$. Then we can operate the following transformation:
+
 $$
 \tilde{\mathbf{q}} = \mathrm{V}^{-1}\mathbf{q} 
 $$
+
 Then the state space representation becomes:
+
 $$
 \begin{cases}
 \dot{\tilde{\mathbf{q}}}(t) = \Lambda \tilde{\mathbf{q}}(t) + \mathrm{V}^{-1}\mathrm{B} \mathbf{x}(t)\\[0.25cm]
 \mathbf{y}(t) = \mathrm{CV}\mathbf{q}(t) + \mathrm{D}\mathbf{x}(t)
 \end{cases}
 $$
+
 The new matrices that defines the state-space representation for this control system is $\{\Lambda,\mathrm{V}^{-1}\mathrm{B},\mathrm{CV}, D\}$. 
 
 We can generalize this result for any linear transformation like follow:
@@ -442,7 +469,9 @@ $$
 \dot{\mathbf{q}}(t) = \begin{bmatrix}0&-{1\over c}\\{1\over L}&-{R\over L}\end{bmatrix}\mathbf{q} + \begin{bmatrix}{1\over c}\\0\end{bmatrix}x\\[0.25cm]
 y = \begin{bmatrix}0&R\end{bmatrix}\mathbf{q}
 \end{cases}
-$$ where $\mathbf{q}=\begin{bmatrix}v_{c}\\i_{L}\end{bmatrix}$
+$$ 
+Where $\mathbf{q}=\begin{bmatrix}v_{c}\\i_{L}\end{bmatrix}$
+
 The transfer function of this system is given by:
 $$
 H(s) = \begin{bmatrix}0&R\end{bmatrix}\left(s\begin{bmatrix}1&0\\0&1\end{bmatrix}-\begin{bmatrix}0&-{1\over c}\\{1\over L}&-{R\over L}\end{bmatrix}\right)^{-1}\begin{bmatrix}{1\over c}\\0\end{bmatrix}
@@ -475,7 +504,8 @@ Taking in consideration all these information, the state equation of this system
 
 $$
 \dot{\mathbf{q}}(t) = \begin{bmatrix}0 & -1& r\\{2k\over m}&0 & 0\\-{2kr\over J}&-{K_{m}k_{1}k_{2}\over JR}&-{b\over J}\end{bmatrix}\mathbf{q}(t) + \begin{bmatrix}0\\0\\-{1\over J}\end{bmatrix}T_{d}(t)
-$$ where $T_{d}(t)$ is the disturbance torque
+$$ 
+Where $T_{d}(t)$ is the disturbance torque
 
 ```run-python
 from sympy import latex, symbols, Matrix, eye, simplify, inverse_laplace_transform
