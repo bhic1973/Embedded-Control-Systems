@@ -42,5 +42,7 @@
   "buttons",
   "image-converter",
   "better-export-pdf",
-  "print"
+  "print",
+  "github-sync",
+  "jupymd"
 ]

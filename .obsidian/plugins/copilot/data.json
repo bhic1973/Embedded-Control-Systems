@@ -375,5 +375,10 @@
   ],
   "reasoningEffort": "low",
   "verbosity": "medium",
-  "enableInlineCitations": true
+  "enableInlineCitations": true,
+  "memoryFolderName": "copilot/memory",
+  "enableRecentConversations": true,
+  "enableSavedMemory": true,
+  "maxRecentConversations": 30,
+  "quickCommandIncludeNoteContext": true
 }

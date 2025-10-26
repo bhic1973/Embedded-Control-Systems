@@ -1,7 +1,32 @@
+---
+jupyter:
+  jupytext:
+    cell_metadata_filter: -all
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.18.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
+```python
+import numpy as np
+import sympy as sp
+import control as ct
+import matplotlib.pyplot as plt
+```
+
 # 1. Introduction
 The ability to adjust both transient and steady-state performance is a key advantage of feedback control systems. Analyzing and designing a control system requires defining and measuring its performance, which involves adjusting controller parameters based on desired outcomes. Control systems are characterized by transient responses, which fade over time, and steady-state responses, which persist after an input signal is initiated. Design specifications typically include various time-response indices and steady-state accuracy targets. These specifications may be revised during the design process to strike a balance, making them more flexible than rigid requirements. Adjustments to specifications can be illustrated graphically in the accompanying figure.
-![[diag51.svg]]
+![](pics/diag51.svg)
+
 The specifications, which are stated in terms of the measures of performance, indicate the quality of the system to the designer. In other words, the performance measures help to answer the question, How well does the system perform the task for which it was designed?
+
 
 # 2. Test input signal
 Time-domain performance specifications are essential for control systems, as they operate within this domain. The transient response is particularly significant for designers. Initially, it's crucial to determine system stability using methods outlined in later sections. If the system is stable, the response to a standard test input signal can indicate performance levels. Since actual input signals are often unknown, using a standard test input allows for effective comparisons among different designs. Moreover, many control systems encounter input signals similar to these standard tests.
@@ -14,7 +39,8 @@ and the parabolic input. These inputs are shown in the following table:
 | Ramp        | $r(t)=\begin{cases}At,\;t>0\\0,\;t\leq0\end{cases}$  | ${A\over s²}$  |
 | Parabolic   | $r(t)=\begin{cases}At²,\;t>0\\0,\;t\leq0\end{cases}$ | ${2A\over s³}$ |
 
-```run-python
+```python
+# run-python
 A=1.0
 tt = np.linspace(-1,1,256)
 ut = np.where(tt>0,A,0)
@@ -22,7 +48,7 @@ rt = np.where(tt>0,A*tt,0)
 pt =np.where(tt>0, A*tt**2,0.0)
 tests = [ut,rt,pt]
 labs = [r'$u(t)$',r'$r(t)$',r'$p(t)$']
-fig, axs = plt.subplots(1,3,sharey=True,figsize=(5.0,2.5))
+fig, axs = plt.subplots(1,3,sharey=True,figsize=(9.0,3))
 for ax, sig, lab in zip(axs,tests, labs):
 	ax.plot(tt,sig,label=lab)
 	ax.legend()
@@ -40,16 +66,18 @@ plt.show()
 Let us consider a single-loop second-order system and determine its response to a
 unit step input. A closed-loop feedback control system is shown in following figure:
 
-![[diag52.svg]]
+![](pics/diag52.svg)
 
 The closed-loop transfer function is:
 $$
 H_{cl}(s)={P(s)\over 1+ P(s)} = {\omega_{n}²\over s²+2\zeta\omega_{n}s + \omega_{n}^2}
-$$ Where $\omega_n$ is the natural frequency and $\zeta$ the damping ratio.
+$$ 
+Where $\omega_n$ is the natural frequency and $\zeta$ the damping ratio.
 
 + **Impulse response of the 2nd-order system:**
- 
-```run-python
+
+```python
+# run-python
 wn = 1.0
 num = [wn**2]
 tt = np.linspace(0.0,15.0,512)
@@ -69,7 +97,8 @@ plt.show()
 
 + **Step response of the 2nd-order system:**
 
-```run-python
+```python
+# run-python
 wn = 1.0
 num = [wn**2]
 tt = np.linspace(0.0,15.0,512)
@@ -97,7 +126,7 @@ $$
 + **Standard performance measures:**
 
   Standard performance measures are often defined in terms of the step response of the closed-loop system as shown in the following illustration:
-![[diag53.svg]]
+![](pics/diag53.svg)
 
   The swiftness of the response is measured by:
 
@@ -107,19 +136,25 @@ $$
 | **Peack time**         | $t_p$    | Time taken for the output to reach it's maximum value ($t_{p}={\pi\over\omega_{n}\sqrt{1-\zeta²}}$)                                                                                                   |
 | **Percent overshoot**  | $PO$     | $${y(t_{p}) - \vert r(t)\vert\over \vert r(t)\vert }\times 100\% = 100\exp(-{\zeta\pi\over\sqrt{1-\zeta²}})(\%)$$ where $\vert r(t)\vert$ is the maximum magnitude of the test signal                 |
 | **Settling time**      | $t_s$    | Time taken by the output to maintain it's value inside $[\vert r(t)\vert -\delta,\vert r(t)\vert +\delta]$ (example $\delta=2\%$ of the final value $\Rightarrow t_{s}\cong{4\over \omega_{n}\zeta}$) |
-| **Steady-state error** | $e_{ss}$ | $$e_{ss} = \vert y(\infty) - \vert r(t)\vert\vert$$                                                                                                                                                   |
+| **Steady-state error** | $e_{ss}$ | $$e_{ss} = \vert y(\infty) - \vert r(t)\vert\vert$$|
+
 In general, the transient response of a 2nd-order system can be described in terms of two factors:
 1. The *Swiftness of response* represented by the rise and peak times.
    + ***Rise time:***
 
-| ![[cap33.png]] | ![[cap32.png]] |
+| ![](pics/cap33.png) | ![](pics/cap32.png) |
 | :------------: | -------------- |
+
 We can approximate the normalized rise-time $t_{r1}$ by a quadratic formula as follow:
+
 $$
 t_{r1}\omega_{n}(\zeta)=2.23\zeta²-0.0785\zeta+1.1178
 $$
+
 + ***Pick time***
-```run-python
+
+```python
+# run-python
 zetas = np.arange(0.1,1.0,0.1)
 def tp(zeta):
 	return np.pi/np.sqrt(1-zeta**2)
@@ -140,7 +175,8 @@ plt.show()
 
 2. The *Closeness of response* to the desired response also represented by the percent overshoot and settling time.  
 
-```run-python
+```python
+# run-python
 zeta = np.linspace(0.1,0.9,100)
 po = 100*np.exp(-np.pi*zeta/np.sqrt(1-zeta**2))
 tp = np.pi/np.sqrt(1-zeta**2)
@@ -165,7 +201,8 @@ H_{cl}(s)={1\over (s²+2\zeta s+1)(\gamma s+1)}
 $$
 The poles of this system are given below:
 
-```run-python
+```python
+# run-python
 from sympy import simplify, symbols, pprint, roots
 from sympy.abc import s
 
@@ -173,10 +210,13 @@ zeta, gamma = symbols('zeta gamma')
 Q = (s**2+2*zeta*s+1)*(s*gamma+1)
 pprint(roots(Q,s)) 
 ```
-![[diag54.svg]]
+
+![](pics/diag54.svg)
+
 + **Effect of the third pole $-\frac{1}{\gamma}$ on the unit step system response**
 
-```run-python
+```python
+# run-python
 num1,den1 = ([1],[1,0.9,1])
 tt = np.linspace(0.0,12.0,512)
 sys1 = ct.tf(num1,den1)
@@ -206,7 +246,9 @@ $$
 H_{cl}(s)={{\omega_{n}²\over a}(s+a)\over s²+2\zeta\omega_{n}s+\omega_{n}²}
 $$
 And let's examine the effect of this zero as it's moves forward with the following values: $\frac{a}{\zeta\omega_{n}}=0.5,1.0,2.0,10.0$ 
-```run-python
+
+```python
+# run-python
 zeta, wn = 0.45, 1.0
 num1,den1 = ([wn**2],[1,2*zeta*wn,wn**2])
 tt = np.linspace(0.0,12.0,512)
@@ -233,12 +275,15 @@ plt.show()
 As the ratio $a/ζω_{n}$ ­increases, the finite zero moves farther into the left half-plane and away from the poles, and the step response approaches the second-order system response, as expected.
 The correlation of the time-domain response of a system with the s-plane ­location of the poles of the closed-loop transfer function is a key concept in understanding system performance in the closed-loop.
 
+
 ***Exercise: Parameters selection***
 A single-loop feedback control system is shown in the figure below: 
-![[diag55.svg]]
+
+![](pics/diag55.svg)
 
 We need to select the controller gain K and the parameter p so that the time-domain specifications are satisfied. The transient response to a unit step is specified to have a percent overshoot of $PO ≤ 5\%$ and a settling time to within $2\%$ of the final value of
 $t_s ≤ 4 s$. Find the parameters $K$ and $p$ that satisfy these requirements.
+
 
 + **Combined impact of zero and third pole on 2nd-order closed-loop system unit step response**
   The transfer function is given now by the following expression:
@@ -247,8 +292,11 @@ H_{cl}={{\omega_{n}²\over a}(s+a)\over (s²+2\zeta\omega_{n}s+\omega_{n}²)(\ta
 $$
   Let's take $\zeta\omega_{n}=3,\, \tau=0.16 \text{ and }a=2.5$
 
-  ***Poles and zeros location:***
-```run-python
+***Poles and zeros location:***
+  
+
+```python
+# run-python
 wn, zeta, tau,a=(5,0.6,0.16,2.5)
 num1,den1, num2,den2, num3,den3 =([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
 sys1, sys2,sys3 = [ct.tf(num1,den1),ct.tf(num2,den2),ct.tf(num3,den3)]
@@ -259,8 +307,11 @@ pzmap = ct.pole_zero_map(sys)
 pzmap.plot(title='Poles-zeros plot for the system',grid=True)
 plt.show()
 ```
+
 ***Step response:***
-```run-python
+
+```python
+# run-python
 wn, zeta, tau,a, delta=(5,0.6,0.16,2.5,0.02)
 num1,den1, num2,den2, num3,den3 =([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
 sys1, sys2,sys3 = [ct.tf(num1,den1),ct.tf(num2,den2),ct.tf(num3,den3)]
@@ -291,6 +342,7 @@ ax.axhline(y=1.02,color='g', ls='--')
 ax.legend()
 plt.show()
 ```
+
 # 5. s-Plane root location and transient response
 The transient response of a closed-loop feedback system can be describe in terms of location of the poles: 
 $$
@@ -310,6 +362,7 @@ The control system designer will envision the effects on the step and impulse re
 Likewise, the designer should visualize the necessary changes for the poles and zeros of $H_{cl}(s)$, in order to effect desired changes in the step and impulse responses.
 
 An experienced designer knows that the placement of zeros affects a system's response. The poles of $H_{cl}(s)$ dictate response modes, while the zeros determine the weight of each mode function. For example, moving a zero closer to a pole reduces its contribution to the output. This directly impacts $A_{i}$  and $D_{k}$; a zero near the pole at $s = -\sigma_i$ results in a smaller $A_i$.
+
 
 # 6. Steady-state error and feedback system
 One of the fundamental reasons for using feedback, despite its cost and increased
@@ -332,6 +385,8 @@ With $R(s)=\frac{A}{s}$. The steady-state error is completely determined by the 
 $$
 e_{ss}={A\over 1 + K_{p}}
 $$
+
+
 + **Ramp input:** The steady-state error for the ramp input (velocity) with a slope $A$ is:
 $$
 e_{ss}=\lim_{s\rightarrow0}s E(s)=\lim_{s\rightarrow0}{A\over s+s L(s)}
@@ -345,6 +400,7 @@ $$
 e_{ss}={A\over K_{v}}
 $$ where $K_{v}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *velocity error constant*. If now $N\ge2$ then $e_{ss}\rightarrow0$
 
+
 + **Acceleration input:** When the system input is $r(t)=\frac{At²}{2}$, the steady-state error is:
 $$
 e_{ss}={A\over s² \lim\limits_{s\rightarrow0} L(s)}
@@ -356,12 +412,14 @@ $$Where $K_{a}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *acceleration error
 
 >Control systems are often described in terms of their type number and the error constants, $K_p$ , $K_v$ , and $K_a$.
 
+
 # 7. Performance indices
 In modern control theory, we can define the required performance of a system quantitatively. This allows us to calculate or measure a performance index, which can then be used to assess the system's performance. These quantitative measures are extremely valuable for both the design and operation of control systems.
 
 A system is considered an optimal control system when its parameters are adjusted to ensure that the performance index reaches an extremum, typically a minimum value. For a performance index to be useful, it must always be a positive number or zero. The best system is defined as the one that minimizes this index.
 
 > **A performance index quantitatively measures system performance, emphasizing key specifications.** 
+
 
 ## 7.1. Integral of square of the error (ISE) as performance index
 A common performance index is the ISE defined as:
@@ -375,7 +433,9 @@ Let's consider the following closed-loop second-order control system, which is r
 $$
 H_{cl}(s) = {1 \over s² +0.65s +1}
 $$
-```run-python
+
+```python
+# run-python
 import warnings  
 warnings.filterwarnings("ignore")
 from scipy.integrate import quad 
@@ -407,6 +467,7 @@ ax3.legend()
 fig.tight_layout()
 plt.show()
 ```
+
 This criterion distinguishes between excessively over-damped and excessively under-damped systems. The minimum value of the integral occurs at a compromise value of the damping. The Integral of Squared Error (ISE) is mathematically convenient for both analytical and computational purposes. 
 There exist other performance index such:
 $$
@@ -416,14 +477,17 @@ $$
 \mathrm{ITSE} &= \int_{0}^{T}t\vert e²(t)\vert dt,\\[0.25cm]
 \end{aligned}
 $$
+
 the general form of the performance index is given by:
 $$
 \mathrm{I}=\int_{0}^{T}f(e(t), r(t), y(t),t)dt
-$$ where $f$ is a function of the error, input, output and time.
+$$ 
+where $f$ is a function of the error, input, output and time.
+
 
 ***Example 2:***
 Consider a telescope pointing control system shown in the figure below:
-![[diag56.svg]]
+![](pics/diag56.svg)
 
 Assuming a zero reference signal $(R(s)=0)$, we can establish the follow relation between the output and the disturbance signal: 
 $$
@@ -433,11 +497,14 @@ $$
 Typical value for the constant $K_{1}=0.5$ and $K_{1}K_{2}K_{p}=2.5$. In this case the goal is to minimize $y(t)$. For a unit step disturbance, the minimum ISE can be evaluated analytically. The attitude is given by:
 $$
 y(t)=\frac{\sqrt{10}}{\beta}e^{-0.25K_{3}t}\sin\left(\frac{\beta}{2}t+\psi\right)
-$$ where $\beta=\sqrt{0.25K_{3}² -10}$ . Squaring $y(t)$ and integrating the results yields:
+$$ 
+where $\beta=\sqrt{0.25K_{3}² -10}$ . Squaring $y(t)$ and integrating the results yields:
 $$
 \mathrm{ISE}=\int_{0}^{\infty}\frac{10}{\beta²}e^{-0.5K_{3}t}\left(\frac{1}{2} - \frac{1}{2}\sin(\beta+2\psi)\right)dt=\frac{1}{K_{3}}+0.1K_{3}
 $$
-```run-python
+
+```python
+# run-python
 K3 = np.linspace(1,10,1024)
 ise = 1/K3 + 0.1*K3
 fig = plt.figure()
@@ -454,7 +521,9 @@ plt.show()
 ```
 
 The optimum system response according to the value of $K_{3}$ that minimize the ISE is given below:
-```run-python
+
+```python
+# run-python
 K1,K3,K1K2Kp=0.5,np.sqrt(10),2.5
 num, den = [1,K1*K3,0], [1, K1*K3,K1K2Kp]
 sys = ct.tf(num,den)
@@ -466,6 +535,7 @@ ax.set_ylabel(r'$y(t)$')
 ax.grid()
 plt.show()
 ```
+
 # 8. Simplification of linear system
 It is quite useful to study complex systems with high-order transfer functions by employing lower-order approximation models. Several methods are available for reducing the order of a system's transfer function. One relatively simple approach is to eliminate a certain insignificant pole, specifically a pole with a higher negative real part. This pole has a minimal effect on the system transient response.
 
@@ -478,7 +548,9 @@ We can safely neglect the pole $p_{3}=-30$ and approximate the transfer function
 $$
 H_{cl,r}(s)=\frac{K}{30}\frac{1}{s(s+2)}
 $$
-```run-python
+
+```python
+# run-python
 K = 1
 zs,ps1,ps2,Ks1 = [],[0,-2,-30],[0,-2],K
 Ks2 = K/-ps1[-1]
@@ -502,17 +574,22 @@ plt.show()
 Consider the high-order system be described by the transfer function:
 $$
 H_{cl}(s)=K\frac{b_{m}s^{m}+b_{m-1}s^{m-1}+\cdots+b_{1}s+1}{a_{n}s^{n}+a_{n-1}s^{n-1}+\cdots+a_{1}s+1}
-$$in which the poles are in left-hand s-plane and $m\leq n$. The lower-order approximate transfer function is:
+$$
+in which the poles are in left-hand s-plane and $m\leq n$. The lower-order approximate transfer function is:
 $$
 H_{cl,r}(s)=K\frac{c_{p}s^{p}+\cdots+c_{1}s+1}{d_qs^q+\cdots+d_{1}s+1}
-$$where $p\leq q<n$. We aim to match $H_{cl}(s)$ and $H_{cl,r}(s)$ over a large interval of frequencies which is equivalent to:
+$$
+
+where $p\leq q<n$. We aim to match $H_{cl}(s)$ and $H_{cl,r}(s)$ over a large interval of frequencies which is equivalent to:
 $$
 \frac{H_{cl}(\jmath\omega)}{H_{cl,r}(\jmath\omega)}\approx 1
-$$ for various $\omega$.
+$$ 
+for various $\omega$.
 Let's define the following expression from the numerator $N(s)$ and denominator polynomial $D(s)$ of the previous ratio:
 $$
 N_{2t}(s)=\sum\limits_{k=0}^{2t}\frac{(-1)^{t+k}N^{(k)}(0)N^{(2t-k)}(0)}{k!(2t-k)!}\quad t=0,1,2\dots
-$$ we use the same definition for the $D_{2t}(s)$. To find the $c_{i}$ and $d_{i}$ coefficients we solve the following equality:
+$$ 
+we use the same definition for the $D_{2t}(s)$. To find the $c_{i}$ and $d_{i}$ coefficients we solve the following equality:
 $$
 N_{2t}(s)=D_{2t}(s)\quad \text{ for } t=1,2,\dots
 $$
@@ -529,12 +606,10 @@ $$
 Every time we fly on a commercial airliner, we benefit from automatic control systems that enhance aircraft handling and assist pilots, especially during long flights. The relationship between flight and controls began with the Wright brothers, who used wind tunnels and systematic design approaches to achieve powered flight, contributing significantly to their success.
 
 The Wright brothers emphasized pilot-controlled flight, inspired by how birds twist their wings to manage rolling motion. They designed their aircraft with mechanical systems for wing warping, which is now obsolete; modern aircraft use ailerons for roll control, as shown in figure below:  
-![[diag57.svg]]
+![](pics/diag57.svg)
 Additionally, they used front-mounted elevators for pitch control and rudders for yaw. Today, elevators are commonly found at the tail of the aircraft, but rudders are still used for lateral control.
 
 The first controlled, powered, unassisted takeoff flight took place in 1903 with the Wright Flyer I, also known as Kitty Hawk. The first practical airplane, the Flyer III, was capable of flying figure eights and could remain airborne for up to half an hour. A significant but often overlooked contribution of the Wright brothers was their development of three-axis flight control. The ongoing desire to fly faster, lighter, and longer has driven further advancements in automatic flight control.
 The main topic of this section is control of the automatic rolling motion of an airplane. The elements of the design process emphasized in this chapter are illustrated in the figure below:
 
-![[diag58.svg]]
-[[TD 02]]
-[[Stability of linear feedback system]]
+![](pics/diag58.svg)
