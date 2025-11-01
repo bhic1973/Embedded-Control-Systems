@@ -1,3 +1,4 @@
+
 # Introduction 
 The stability of closed-loop feedback systems is crucial in control system design. A stable system should produce a bounded output for any bounded input, a principle known as bounded-input, bounded-output (BIBO) stability. This stability relates to the roots of the characteristic equation of the system's transfer function and the eigenvalues of the system transition matrix in state-variable format. 
 
@@ -199,7 +200,9 @@ b_{1} &= \frac{a_{2}a_{1}-a_{3}\times a_{0}}{a_{2}}\\
 c_{1} &= \frac{b_{1}a_{0}-a_{0}\times 0}{b_{1}} = a_{0}\\
 \end{cases}
 $$
+
 The 3rd-order system is asymptotically stable if all coefficients of the characteristic polynomial are positive and $a_{2}a_{1}>a_{3}a_{0}$.
+
 
 ```run-python
 den =[]
@@ -215,3 +218,159 @@ else:
 	print('Routh-Hurwitz criterion is not fullfield')
 ```
 
+# The relative stability of a feedback control systems
+The Routh–Hurwitz criterion helps determine the absolute stability of a system by checking if any roots of the characteristic equation are located in the right half of the s-plane. However, merely satisfying this criterion does not provide complete insight into the system's relative stability, which is essential for understanding the damping of each root. 
+
+Relative stability refers to the comparison of the real parts of the roots, indicating their stability. For example, root $r_2$ may be more stable than roots $r_1$  and $r̂_{1}$, as shown in the figure below:
+![[diag77.svg]]
+
+It can also be defined in terms of relative damping coefficients $\zeta$  for complex root pairs, affecting speed of response and overshoot. Assessing each root's relative stability is vital, as the location of closed-loop poles in the s-plane impacts overall system performance. Thus, exploring various methods to evaluate relative stability in the characteristic polynomial $Q(s)$ is necessary.
+
+The stability of a system is determined by the positions of its characteristic equation roots. To analyze this using an s-plane, we can extend the Routh–Hurwitz criterion by shifting the vertical axis to $-σ_{1}$. This shift positions the roots $r_{1}$ and $\hat{r}_{1}$ on the new axis. The correct shift must be found through trial and error, allowing us to determine the real parts of the dominant roots $r_{1}$ and $\hat{r}_{1}$ without solving the fifth-order polynomial $Q(s)$.
+
+***Example: Axis shift***
+
+Consider the 3rd-order characteristic equation:
+$$
+Q(s) = s³+4s²+6s+4 = 0
+$$
+```run-python
+sigma = 0
+s = ct.tf('s')
+Q = (s+sigma)**3 +4*(s+sigma)**2 + 6*(s+sigma) + 4
+ct.pole_zero_plot(1/Q,grid=True)
+plt.show()
+```
+Setting the shifted variable $z$ as $s = z+ \sigma$ we obtain:
+$$
+(z+\sigma)³ + 4(z+\sigma)²+6(z+\sigma)+4 = 0
+$$
+After expansion and simplification of the new characteristic equation we obtain:
+
+$$
+z^3 + (3σ + 4)z^2 + (3σ^2 + 8σ + 6)z + σ^3 + 4σ^2 + 6σ + 4 = 0 
+$$
+Let construct the Routh array for this characteristic equation:
+
+$$
+\begin{array}{c|ll}
+z^{3} & 1 &3\sigma^{2}+8\sigma +6 \\
+z² &3\sigma + 4  &σ^3 + 4σ^2 + 6σ + 4,\\
+z & \frac{3σ^4 + 16σ^3 + 31σ^2 + 28σ + 10}{3σ + 4}
+& 0\\
+1 & σ^3 + 4σ^2 + 6σ + 4, & 0
+\end{array}
+$$
+
+To maintain asymptotic stability for this system the shift parameter $\sigma \in\; ]-1,\infty[$  
+
+```run-python
+sigma = -1
+s = ct.tf('s')
+Q = (s+sigma)**3 + 4*(s+sigma)**2 + 6*(s+sigma) + 4
+ct.pole_zero_plot(1/Q,grid=True)
+plt.show()
+# print(1/Q)
+ ```
+The distance between the poles and the imaginary axis of the S-plane has a significant influence on the system's stability. If the system parameters change, the poles may shift, potentially moving from a stable region to an unstable one. This shift can result from variations in one or more parameters that need to be controlled, or it may be caused by delays in the system.
+
+# Stability in the context of state variables systems 
+The stability of a system represented by a state variable flow graph model can be easily determined. If the system is modeled using a signal-flow graph, the characteristic equation can be obtained by evaluating the determinant of the flow graph. Conversely, if the system is represented by a block diagram, we can derive the characteristic equation using block diagram reduction methods.
+
+***Example*** **Stability of a 2nd-order system
+
+Let us consider a second-order system described by the following state-space equations:
+
+$$
+\begin{cases}
+\begin{bmatrix}
+\dot{x}_{1}\\\dot{x}_{2}
+\end{bmatrix} = \begin{pmatrix}
+-3 & 1\\-K & 1
+\end{pmatrix}\begin{bmatrix}
+x_{1}\\x_{2}
+\end{bmatrix}+\begin{bmatrix}
+0\\K
+\end{bmatrix}u\\ \\
+y = \begin{bmatrix}
+1 & 0
+\end{bmatrix}\begin{bmatrix}
+x_{1}\\x_{2}
+\end{bmatrix} + 0u
+\end{cases}
+$$
+
+![[diag78.svg]]
+
+We can use the Mason formula to find the expression of the transfer function:
+
+$$
+\begin{aligned}
+P_{1} &= K s^{n-2}\\
+L_{1} &= s^{-1}\\
+L_{2} &= -3 s^{-1}\\
+L_{3} &= -K s^{-2}\\
+\Delta &= 1 - (L_{1} + L_{2} + L_{3} ) + L_{1}L_{3}\\
+\Delta_{1} &= 1 \\
+H(s) &= \frac{P_{1}\Delta_{1}}{\Delta}\\
+&= \frac{K}{s² +2s+K-3}
+\end{aligned}
+$$
+We can also use the following formula that we established in the state-space representation part of this course:
+$$
+H(s) = C(sI-A)^{-1}B+D
+$$
+By using this formula we obtain:
+
+```run-python
+import sympy as sp
+from sympy.abc import s
+K = sp.Symbol('K')
+A = sp.Matrix([[-3,1],[-K,1]])
+B = sp.Matrix([[0],[K]])
+C = sp.Matrix([[1,0]])
+D = sp.Matrix([[0]])
+H = C@(s*sp.eye(A.shape[0])-A).inv()@B+D
+sp.pprint(H)
+```
+
+The condition for this system to be stable is $K>3$ 
+
+```run-python
+K = 30.1
+H = ct.tf([K],[1,2,K-3])
+ct.pole_zero_plot(H,grid=True, title=f'Poles and zeros map for 2nd-order system with K={K}')
+plt.show()
+```
+
+We have previously stated that the common element between the ZSR and the ZIR is the dominator of their expressions. When we utilize state-space representation, the characteristic equation is expressed as:
+
+$$
+q(s) = \left\vert (sI-A)\right\vert=0
+$$
+This is is also the eigenvalue characteristic equation of the transition matrix $A$. In the other words, the poles of the system are the eigenvalues of the system.
+
+
+```run-python
+import sympy as sp
+from sympy.abc import s
+K = sp.Symbol('K')
+A = sp.Matrix([[-3,1],[-K,1]])
+lambs = [lamb for lamb in A.eigenvals().keys()]
+rs0, rs1 = [],[]
+for k in np.arange(0.0,5.0,0.1):
+	rs0.append(lambs[0].as_poly().subs(K,k))
+	rs1.append(lambs[1].as_poly().subs(K,k))
+
+rs = np.complex64([rs0,rs1])
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(rs[0,:].real,rs[0,:].imag,'x',label='Locus pole 1') 
+ax.plot(rs[1,:].real,rs[1,:].imag,'xr',label='Locus pole 2')
+ax.set_title('Roots locus of the system with K variation')
+ax.grid()
+ax.legend()
+ax.set_xlabel('Real')
+ax.set_ylabel('Imag') 
+plt.show()
+```
