@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Feedback control system.md",
+                "file": "Stability of linear feedback system.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Feedback control system"
+              "title": "Stability of linear feedback system"
             }
           }
         ]
@@ -80,12 +80,22 @@
             "state": {
               "type": "file-tree-view",
               "state": {},
-              "icon": "sheets-in-box",
-              "title": "File Tree"
+              "icon": "lucide-ghost",
+              "title": "file-tree-view"
             }
           },
           {
             "id": "bd2466038226e4f9",
+            "type": "leaf",
+            "state": {
+              "type": "file-tree-view",
+              "state": {},
+              "icon": "lucide-ghost",
+              "title": "file-tree-view"
+            }
+          },
+          {
+            "id": "3fbf5697d5509162",
             "type": "leaf",
             "state": {
               "type": "file-tree-view",
@@ -98,8 +108,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 378.51103591918945,
-    "collapsed": true
+    "width": 378.51103591918945
   },
   "right": {
     "id": "c0ee55d6ccf37a84",
@@ -222,12 +231,22 @@
             "state": {
               "type": "todo",
               "state": {},
+              "icon": "lucide-ghost",
+              "title": "todo"
+            }
+          },
+          {
+            "id": "dc3f7d102fb7ed5b",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {},
               "icon": "checkmark",
               "title": "Todo List"
             }
           }
         ],
-        "currentTab": 8
+        "currentTab": 9
       }
     ],
     "direction": "horizontal",
@@ -256,12 +275,13 @@
       "smart-connections:Smart Connections: Open connections view": false,
       "smart-connections:Smart Connections: Open random connection": true,
       "copilot:Open Copilot Chat": false,
-      "print:Print note": false,
-      "github-sync:Sync with Remote": false
+      "print:Print note": false
     }
   },
   "active": "465fc9c0b8aee472",
   "lastOpenFiles": [
+    "pics/cap34.png",
+    "Feedback control system.md",
     "Feedback control system_tmp_jupytext_11556.ipynb",
     "Feedback control system.ipynb",
     "Performance of a feedback system.md",
@@ -270,7 +290,6 @@
     "Performance of a feedback system_tmp_jupytext_20416.ipynb",
     "Performance of a feedback system_tmp_jupytext_19420.ipynb",
     "Performance of a feedback system.ipynb",
-    "Feedback control system.md",
     "State space models.md",
     "State space models.pdf",
     "Sim/note.txt",
@@ -279,7 +298,6 @@
     "pics/diag77.svg",
     "example.drawio",
     "Quizs/Test 01.md",
-    "Quizs/Test 01.pdf",
     "Mason formula.md",
     "Mathematical Models of systems.md",
     "pics/fig1.png",

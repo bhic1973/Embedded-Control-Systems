@@ -19,6 +19,7 @@ import numpy as np
 import sympy as sp
 import control as ct
 import matplotlib.pyplot as plt
+from Sim.controltools import plot2d_fun
 ```
 
 # 1. Introduction
@@ -50,13 +51,9 @@ tests = [ut,rt,pt]
 labs = [r'$u(t)$',r'$r(t)$',r'$p(t)$']
 fig, axs = plt.subplots(1,3,sharey=True,figsize=(9.0,3))
 for ax, sig, lab in zip(axs,tests, labs):
-	ax.plot(tt,sig,label=lab)
-	ax.legend()
-	ax.grid(True)
-	ax.set_xlabel('Time [s]')
-	ax.spines["top"].set_color("None")
-	ax.spines["right"].set_color("None")
-	ax.set_ylim([0.0,1.25*A])
+    plot2d_fun(fig,ax,(tt,sig),label=lab, ylim=(0.0,1.25*A),color='darkblue')
+    ax.spines["top"].set_color("None")
+    ax.spines["right"].set_color("None")
 fig.tight_layout()
 fig.suptitle('Commonly used test signal in control system',y=1.0)
 plt.show()
@@ -74,26 +71,6 @@ H_{cl}(s)={P(s)\over 1+ P(s)} = {\omega_{n}²\over s²+2\zeta\omega_{n}s + \omeg
 $$ 
 Where $\omega_n$ is the natural frequency and $\zeta$ the damping ratio.
 
-+ **Impulse response of the 2nd-order system:**
-
-```python
-# run-python
-wn = 1.0
-num = [wn**2]
-tt = np.linspace(0.0,15.0,512)
-sys1 = ct.tf([wn**2],[1,0])
-sys2 = ct.tf([1],[1])
-for zeta in [0.1, 0.4, 0.7, 1.0, 2.0]:
-	den = [1,zeta*wn*2]
-	sys3 = ct.tf([1],den)
-	sys = ct.feedback(ct.series(sys1,sys3),sys2)
-	imp_resp = ct.impulse_response(sys, timepts=tt)
-	imp_resp.plot(label=rf'$\zeta={zeta}$', title='Impulse response of the 2nd-order system')
-plt.legend()
-plt.grid(True)
-plt.ylabel(r'$y(t)$')
-plt.show()
-```
 
 + **Step response of the 2nd-order system:**
 
@@ -105,14 +82,15 @@ tt = np.linspace(0.0,15.0,512)
 sys1 = ct.tf([wn**2],[1,0])
 sys2 = ct.tf([1],[1])
 for zeta in [0.1, 0.4, 0.7, 1.0, 2.0]:
-	alpha = 0.5 if zeta!=0.575 else 1.0
-	den = [1,zeta*wn*2]
-	sys3 = ct.tf([1],den)
-	sys = ct.feedback(ct.series(sys1,sys3),sys2)
-	step_resp = ct.step_response(sys,timepts=tt)
-	step_resp.plot(label=rf'$\zeta={zeta}$', title='Unit step response of the 2nd-order system',alpha=alpha)
-plt.axhline(y=0.98,color='k', ls='--',label=r'$1-\delta$')
-plt.axhline(y=1.02,color='k', ls='--',label=r'$1+\delta$')
+    alpha = 0.5 if zeta!=0.575 else 1.0
+    den = [1,zeta*wn*2]
+    sys3 = ct.tf([1],den)
+    sys = ct.feedback(ct.series(sys1,sys3),sys2)
+    step_resp = ct.step_response(sys,timepts=tt)
+    step_resp.plot(label=rf'$\zeta={zeta}$', title='Unit step response of the 2nd-order system',alpha=alpha)
+
+plt.axhline(y=0.98,color='k', ls='--',label=r'$1\pm\delta$')
+plt.axhline(y=1.02,color='k', ls='--',label=None)
 plt.legend()
 plt.grid(True)
 plt.ylabel(r'$y(t)$')

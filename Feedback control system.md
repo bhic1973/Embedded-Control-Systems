@@ -19,6 +19,7 @@ import numpy as np
 import sympy as sp
 import control as ct
 import matplotlib.pyplot as plt
+from Sim.controltools import plot2d_fun
 ```
 
 # 1. Introduction
@@ -246,8 +247,10 @@ for Large loop gain.
 
 
 # 5. Control of the transient response
-One of the most characteristics of a control system is their transient response. **The transient response** is the response of the system over time before reaching the steady-state response. 
-The purpose of the control system is to provide a desired response. It follow the transient response often must be adjusted until it is satisfactory. To highlight the importance of the transient response let's analyse their effect  on a speed control system. The is described by the following transfer function:
+One of the most characteristic features of a control system is its transient response. 
++ **Definition:**
+  <p style="color:darkblue;font-size:medium;font-weight:600;font-family:times">The transient response is the response of the system over time before reaching the steady-state response.</p> 
+The purpose of the control system is to provide a desired response. It follow the transient response often must be adjusted until it is satisfactory. To highlight the importance of the transient response, let's analyse its effect  on a speed control system described by the following transfer function:
 $$
 P(s) = {K_{1}\over \tau_{1}s + 1}
 $$ 
@@ -281,24 +284,30 @@ $$
 
 ```python
 # run-python
-tau = 10
-tt = np.linspace(0.0,2.0,1024)
+from sympy.abc import t
+τ = 10
 k1kakt = 100
-wt = 1 - np.exp(-tt/tau)
-wclt = 1-np.exp(-tt*(1+k1kakt)/tau)
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.plot(tt,wt,label=r"$\frac{\omega(t)}{K_{1}k_{2}E}$")
-ax.plot(tt,wclt,label=r"$\frac{K_{t}\omega_{cl}(t)}{k_{2}E}$")
-ax.set_xlabel("Times [s]")
-ax.set_ylabel("Output")
-ax.grid(True)
-ax.legend(loc='best')
-ax.set_title('Speed control system response under open and closed-loop')
-plt.show()
+ωo = 1 - sp.exp(-t/τ)
+ωcl = 1-sp.exp(-t*(1+k1kakt)/τ)
+ 
+data = sp.plot(ωo, (t,0,2),show=False,adaptative=True)[0].get_data()
+fig, ax = plt.subplots() 
+plot2d_fun(fig, ax, data,
+          label=r"$\frac{\omega(t)}{K_{1}k_{2}E}$",
+          ls='-.'
+         )
+data = sp.plot(ωcl, (t,0,2), show=False,adaptative=True)[0].get_data()
+plot2d_fun(fig, ax, data,
+          label=r"$\frac{K_{t}\omega_{cl}(t)}{k_{2}E}$",
+          color='darkblue',
+          ylabel=r'$\omega$',
+          legend_pos='center',
+          title='Open vs Closed-loop system transient response',
+          show=True
+         )
 ```
 
-While we are considering this speed control system, it will be worthwhile to determine the sensitivity of the open- and closed-loop systems. As before, the sensitivity of the open-loop system to a variation in the motor constant or the potentiometer constant $k_2$ is unity. The sensitivity of the closed-loop system to a variation in $K_{m}$ is frequency dependent as is reflected in the following expression:
+While we are considering this speed control system, it will be worthwhile to determine the sensitivity of the open- and closed-loop systems. As before, the sensitivity of the open-loop system to a variation in the motor constant or the potentiometer constant $k_2$ is unity. The sensitivity of the closed-loop system to a variation in $K_{m}$ is frequency dependent, as is reflected in the following expression:
 $$
 S^{H_{cl}}_{K_{m}} \approx \frac{s + {1\over \tau_{1}}}{s + {1 + K_{t}K_{a}K_{1}\over\tau_{1}}} 
 $$
@@ -314,8 +323,10 @@ plt.show()
 ```
 
 # 6. steady-state error 
-A feedback control system allows engineers to adjust the transient response effectively. Additionally, as we have observed, the system's sensitivity and the impact of disturbances can be significantly reduced. However, we also need to examine and compare the final steady-state error in both open-loop and closed-loop systems. 
-The **steady-state error** refers to the difference remaining after the transient response has dissipated, leaving only the continuous response.
+A feedback control system allows engineers to adjust the transient response effectively. Additionally, as we have observed, the system's sensitivity and the impact of disturbances can be significantly reduced. However, we also need to examine and compare the final steady-state error in both open-loop and closed-loop systems.
+
++ **Definition:**
+<p style="color:darkblue;font-family:times;font-weight:600;font-size:20px">The steady-state error refers to the difference remaining after the transient response has dissipated, leaving only the continuous response</p>.
 
 The error of the open-loop control system shown in the figure below is:
 
@@ -386,18 +397,9 @@ The addition of feedback to dynamic systems causes more challenges for the desig
 
 
 # 8. Design example: (Blood pressure control during anesthesia)
-The objectives of anethesia are to eliminate pain, awareness, and natural reflexes so
-that surgery can be conducted safely. Before about 150 years ago, alcohol, opium,
-and cannabis were used to achieve these goals, but they proved inadequate. Pain relief was insufficient both in magnitude and duration; too little pain medication and the patient felt great pain, too much medication and the patient died or became comatose. In the 1850s ether was used successfully in the United States in tooth extractions, and shortly thereafter other means of achieving unconsciousness safely were developed, including the use of chloroform and nitrous oxide.
+The objectives of anesthesia are to eliminate pain, awareness, and reflexes for safe surgery. Before modern methods, substances like alcohol and opium were insufficient, leading to inadequate pain relief or fatal overdoses. In the 1850s, ether was successfully used in the U.S. for tooth extractions, followed by chloroform and nitrous oxide. 
 
-In a modern operating room, the depth of anesthesia is the responsibility of the anesthetist. Many vital parameters, such as blood pressure, heart rate, temperature,
-blood oxygenation, and exhaled carbon dioxide, are controlled within acceptable
-bounds by the anesthetist. Of course, to ensure patient safety, adequate anesthesia
-must be maintained during the entire surgical procedure. Any assistance that the anesthetist can obtain automatically will increase the safety margins by freeing the
-anesthetist to attend to other functions not easily automated. This is an example of
-human computer interaction for the overall control of a process. Clearly, patient safety is the ultimate objective. Our control goal then is to develop an automated system to regulate the depth of anesthesia. This function is amenable to automatic control and in fact is in routine use in clinical applications.
-
-We consider how to measure the depth of anesthesia. Many anesthetists ­regard mean arterial pressure (MAP) as the most reliable measure of the depth of ­anesthesia. The level of the MAP serves as a guide for the delivery of inhaled ­anesthesia. Based on clinical experience and the procedures followed by the anesthetist, we determine that the variable to be controlled is the mean arterial pressure.
+In today's operating rooms, the anesthetist controls the depth of anesthesia and monitors vital parameters such as blood pressure, heart rate, and oxygenation to ensure patient safety throughout the procedure. Automation can assist anesthetists, allowing them to focus on other critical tasks. Mean arterial pressure (MAP) is often regarded as a reliable indicator of anesthesia depth, guiding the delivery of inhaled anesthetics. Thus, MAP is the variable we aim to control.
 
 The elements of the control system design process emphasized in this example are illustrated in the following figure:
 
@@ -457,42 +459,52 @@ params = [(6,4,1,2),(5,7,2,2),(6,4,4,2)]
 R0, D0 = 10, 50
 fig = plt.figure(figsize=(6,8))
 gs = GridSpec(3,1,figure=fig)
-# gs1 = gs[1:,0].subgridspec(2,1)
+gs1 = gs[1:,0].subgridspec(2,1)
 ax1 = fig.add_subplot(gs[0,0])
 ax2 = fig.add_subplot(gs[1,0])
 ax3 = fig.add_subplot(gs[2,0])
-for ((KP,KD,KI,p), lab) in zip(params,pid_labs):
-	S = ct.tf([-2*p,-2*p**2,0,0],[1,2*p,p**2+KD,KP,KI])
-	T = ct.tf([KD*R0,KP*R0,KI*R0],[1,2*p,p**2+KD,KP,KI])
-	G = ct.tf([-D0,0,0],[1,2*p,p**2+KD,KP,KI])
-	mag,_,w = ct.frequency_response(S)
-	MAP1 = T.step_response()
-	MAP2 = G.step_response()
-	ax1.plot(w,mag,label=lab)
-	ax2.plot(MAP1.t,MAP1.y.squeeze())
-	ax3.plot(MAP2.t,MAP2.y.squeeze())
-	ax1.set_xscale('log')
-ax2.plot(MAP1.t,11.5*np.ones(MAP1.y.size),'--k')
-ax1.set_title("Sensitivity of Pressure blood control system")
-ax2.set_title(rf"MAP reference signal tracking response $R(s)={R0}/s$")
-ax3.set_title(rf"MAP disturbance step response $T_d(s)={D0}/s$")
-ax1.set_xlabel("Frequency [rd/s]")
-ax2.set_xlabel("Times [s]")
-ax1.set_ylabel("Sensitivity")
-ax2.set_ylabel("MAP")
-ax3.set_ylabel("MAP")
-ax1.set_xlim([0.1,10])
-ax3.set_xlim([0.,20])
-ax2.set_xlim([0,20])
-ax1.set_ylim([0,3])
-ax2.set_ylim([0,14])
-ax3.set_ylim([-6,4])
-ax1.grid(True, which='both')
-ax2.grid(True)
-ax3.grid(True)
-ax2.annotate(r'$15\%$ overshoot',[15,12])
-fig.tight_layout()
-fig.legend(loc='upper right')
+cs = ['blue','red','green']
+kwargs1 = {'xlabel':'Frequency [Hz]',
+              'ylabel':'Sensitivity',
+              'title':"Sensitivity of the Pressure blood control system",
+              'xlim':(0.1,10),
+              'ylim':(0,3),
+              'legend_pos':'upper right',
+              'xscale':'log'}
+kwargs2 = {'ylabel':'MAP',
+              'title':rf"MAP reference signal tracking response $R(s)={R0}/s$",
+              'xlim':(0.0,20),
+              'ylim':(0,14.5),
+              'legend_pos':'lower right',
+          }
+kwargs3 = {'ylabel':'MAP',
+              'title':rf"MAP disturbance signal tracking response $T_d(s)={D0}/s$",
+              'xlim':(0.0,20),
+              'ylim':(-6,5),
+              'legend_pos':'lower right',
+               'show':False
+          }
+for ((KP,KD,KI,p), lab, c) in zip(params,pid_labs,cs):
+    S = ct.tf([-2*p,-2*p**2,0,0],[1,2*p,p**2+KD,KP,KI])
+    T = ct.tf([KD*R0,KP*R0,KI*R0],[1,2*p,p**2+KD,KP,KI])
+    G = ct.tf([-D0,0,0],[1,2*p,p**2+KD,KP,KI])
+    mag,_,w = ct.frequency_response(S)
+    MAP1 = T.step_response()
+    MAP2 = G.step_response()
+    args = [fig,ax1,(w,mag)]
+    for d in [kwargs1,kwargs2,kwargs3]:
+        d['color'] = c 
+        d['label'] = lab 
+    plot2d_fun(*args,**kwargs1)
+    args[1:] = [ax2,(MAP1.t,MAP1.y.squeeze())]
+    # print(args)
+    plot2d_fun(*args,**kwargs2)
+    args[1:] = [ax3,(MAP2.t,MAP2.y.squeeze())]
+    plot2d_fun(*args,**kwargs3)
+
+ax2.annotate(r'$15\%$ overshoot',[3,13])
+plt.tight_layout()
+# fig.legend(loc='upper right')
 plt.show()
 ```
 

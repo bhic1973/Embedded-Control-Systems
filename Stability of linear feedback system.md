@@ -4,8 +4,7 @@ The stability of closed-loop feedback systems is crucial in control system desig
 
 The Routh–Hurwitz method is a valuable tool for assessing stability, allowing us to identify the number of roots in the right half-plane without calculating their exact values. This aids in designing parameters to achieve closed-loop stability. 
 
-Additionally, we will explore relative stability, which characterizes the level of stability in systems. This section wraps up with a stabilizing controller design based on the Routh–Hurwitz method, demonstrated in the Sequential Design Example: Disk Drive Read System.
-
+Additionally, we will explore relative stability, which characterizes the level of stability in systems. 
 # Desired outcomes
 Upon completion of this section, we aim that you should be able to:
 
