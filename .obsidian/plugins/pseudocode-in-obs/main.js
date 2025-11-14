@@ -14774,6 +14774,12 @@ var PseudocodePlugin = class extends import_obsidian3.Plugin {
     const blockDiv = el.createDiv({ cls: "pseudocode-block" });
     const blockWidth = this.settings.blockSize;
     blockDiv.style.width = `${blockWidth}em`;
+    blockDiv.addEventListener("click", (event) => {
+      var _a, _b, _c, _d;
+      const target = event.target;
+      if (target && target.tagName !== "BUTTON")
+        (_d = (_c = (_b = (_a = target.closest(".pseudocode-block")) == null ? void 0 : _a.parentElement) == null ? void 0 : _b.parentElement) == null ? void 0 : _c.querySelector(".edit-block-button")) == null ? void 0 : _d.click();
+    });
     const [inlineMacros, nonMacroLines] = extractInlineMacros(source);
     const allPreamble = this.preamble + inlineMacros;
     const mathRegex = /\$(.*?)\$/g;

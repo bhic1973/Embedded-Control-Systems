@@ -18,21 +18,21 @@ jupyter:
 import numpy as np
 import sympy as sp
 import control as ct
-import matplotlib.pyplot as plt
-from Sim.controltools import plot2d_fun
+from ipywidgets import widgets, interact
+from IPython.display import display
+from matplotlib import pyplot as plt
 ```
 
 # 1. Introduction
-The ability to adjust both transient and steady-state performance is a key advantage of feedback control systems. Analyzing and designing a control system requires defining and measuring its performance, which involves adjusting controller parameters based on desired outcomes. Control systems are characterized by transient responses, which fade over time, and steady-state responses, which persist after an input signal is initiated. Design specifications typically include various time-response indices and steady-state accuracy targets. These specifications may be revised during the design process to strike a balance, making them more flexible than rigid requirements. Adjustments to specifications can be illustrated graphically in the accompanying figure.
+The main advantage of feedback control systems is their ability to adjust both transient and steady-state performance. Analyzing and designing these systems involves defining performance and adjusting controller parameters for desired outcomes. Control systems exhibit transient responses that fade over time and steady-state responses that persist. Design specifications include time-response indices and steady-state accuracy, which can be revised for flexibility. These adjustments can be illustrated graphically.
+
 ![](pics/diag51.svg)
 
 The specifications, which are stated in terms of the measures of performance, indicate the quality of the system to the designer. In other words, the performance measures help to answer the question, How well does the system perform the task for which it was designed?
 
 
 # 2. Test input signal
-Time-domain performance specifications are essential for control systems, as they operate within this domain. The transient response is particularly significant for designers. Initially, it's crucial to determine system stability using methods outlined in later sections. If the system is stable, the response to a standard test input signal can indicate performance levels. Since actual input signals are often unknown, using a standard test input allows for effective comparisons among different designs. Moreover, many control systems encounter input signals similar to these standard tests.
-The standard test input signals commonly used are the step input, the ramp input,
-and the parabolic input. These inputs are shown in the following table:
+Time-domain performance specifications are crucial for control systems, especially the transient response, which is vital for designers. Firstly, it's important to assess system stability. If stable, the system's response to standard test input signals can indicate performance levels, enabling effective comparisons between different designs. Many control systems also face input signals similar to these standard tests. The standard test input signals commonly used are the step input, the ramp input, and the parabolic input. These inputs are shown in the following table:
 
 | Test signal |                        $r(t)$                        |     $R(s)$     |
 | :---------- | :--------------------------------------------------: | :------------: |
@@ -51,12 +51,15 @@ tests = [ut,rt,pt]
 labs = [r'$u(t)$',r'$r(t)$',r'$p(t)$']
 fig, axs = plt.subplots(1,3,sharey=True,figsize=(9.0,3))
 for ax, sig, lab in zip(axs,tests, labs):
-    plot2d_fun(fig,ax,(tt,sig),label=lab, ylim=(0.0,1.25*A),color='darkblue')
-    ax.spines["top"].set_color("None")
-    ax.spines["right"].set_color("None")
+	ax.plot(tt,sig,label=lab)
+	ax.legend()
+	ax.grid(True)
+	ax.set_xlabel('Time [s]')
+	ax.spines["top"].set_color("None")
+	ax.spines["right"].set_color("None")
+	ax.set_ylim([0.0,1.25*A])
 fig.tight_layout()
-fig.suptitle('Commonly used test signal in control system',y=1.0)
-plt.show()
+fig.suptitle('Commonly used test signal in control system',y=1.0);
 ```
 
 # 3. Performance of second order systems
@@ -71,33 +74,81 @@ H_{cl}(s)={P(s)\over 1+ P(s)} = {\omega_{n}²\over s²+2\zeta\omega_{n}s + \omeg
 $$ 
 Where $\omega_n$ is the natural frequency and $\zeta$ the damping ratio.
 
-
-+ **Step response of the 2nd-order system:**
++ **Impulse response of the 2nd-order system:**
 
 ```python
 # run-python
 wn = 1.0
 num = [wn**2]
+s = ct.TransferFunction.s
 tt = np.linspace(0.0,15.0,512)
-sys1 = ct.tf([wn**2],[1,0])
-sys2 = ct.tf([1],[1])
-for zeta in [0.1, 0.4, 0.7, 1.0, 2.0]:
-    alpha = 0.5 if zeta!=0.575 else 1.0
-    den = [1,zeta*wn*2]
-    sys3 = ct.tf([1],den)
-    sys = ct.feedback(ct.series(sys1,sys3),sys2)
-    step_resp = ct.step_response(sys,timepts=tt)
-    step_resp.plot(label=rf'$\zeta={zeta}$', title='Unit step response of the 2nd-order system',alpha=alpha)
+sys1 = wn**2 * s**0
+sys2 = 1 / s
+```
 
-plt.axhline(y=0.98,color='k', ls='--',label=r'$1\pm\delta$')
-plt.axhline(y=1.02,color='k', ls='--',label=None)
-plt.legend()
-plt.grid(True)
-plt.ylabel(r'$y(t)$')
-plt.show()
+```python
+@interact(ζ=(0.1, 2.0, 0.2))
+def plot_impulse_response(ζ=0.7):
+    sys3 = 1 / (s + 2 * wn * ζ) 
+    sys = ct.series(sys1,sys2,sys3).feedback(1)
+    sys.impulse_response(tt).plot(label=rf'$\zeta={ζ}$', title='Impulse response of the 2nd-order system')
+    plt.legend()
+    plt.ylim(-1.0,1.0)
+    plt.grid(True)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.ylabel(r'$y(t)$');
+```
+
++ **Step response of the 2nd-order system:**
+
+```python
+# run-python
+@interact(ζ=(0.1, 2.0, 0.2))
+def plot_step_response(ζ=0.7):
+    sys3 = 1 / (s + 2 * wn * ζ) 
+    sys = ct.series(sys1,sys2,sys3).feedback(1)
+    sys.step_response(tt).plot(label=rf'$\zeta={ζ}$', title='Unit step response of the 2nd-order system')
+    plt.axhline(y=0.98,color='k', ls='--',label=r'$1-\delta$')
+    plt.axhline(y=1.02,color='k', ls='--',label=r'$1+\delta$')
+    plt.legend(loc='center right')
+    plt.ylim(0.0,1.2)
+    plt.grid(True)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.ylabel(r'$y(t)$');
+
+# plot_step_response()
 ```
 
 The output of the 2nd-order system is given by calculating the inverse transform of the transfer function multiplied by the reference signal $R(s)={1\over s}$:
+
+```python
+s, t, ωₙ, ζ = sp.symbols('s t ωₙ ζ')
+H = ωₙ**2 / s / (s**2 + 2 * ωₙ * ζ * s + ωₙ**2)
+print("\n\n")
+with sp.assuming(ζ < 1, ζ > 0 , ωₙ > 0):
+    y = sp.simplify(sp.inverse_laplace_transform(H,s,t))
+y 
+```
+```python
+@interact(zeta=(0.1,2.0,0.2))
+def plot_symbolic_step_response(zeta=0.7):
+    p = sp.plot(y.subs(ωₙ,1.0).subs(ζ,zeta),(t,0.0,14.0),show=False)
+    data = p[0].get_data()
+    tt , yout = data
+    yout = yout.squeeze()
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    ax.plot(tt,yout,label=f'Step response for ζ = {round(zeta,ndigits=1)}')
+    ax.set_xlabel('time [s]')
+    ax.set_ylabel(r'$y_{out}(t)$')
+    ax.legend(loc='center right')
+    ax.grid()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+```
+
 $$
 y(t) = \left(1 - \sqrt{{1\over 1- \zeta²}}\exp(-\zeta\omega_{n}t)\sin\left(\sqrt{1-\zeta²}\omega_{n}t+\varphi\right)\right)u(t)\text{ where }\varphi =\cos^{-1}({\zeta}) 
 $$
@@ -133,16 +184,17 @@ $$
 
 ```python
 # run-python
-zetas = np.arange(0.1,1.0,0.1)
-def tp(zeta):
-	return np.pi/np.sqrt(1-zeta**2)
+def tp(ζ):
+	return np.pi/np.sqrt(1-ζ**2)
 
-tps = tp(zetas)
+ζs = np.arange(0.1,1.0,0.1)
+tps = tp(ζs)
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.spines["top"].set_color("None")
 ax.spines["right"].set_color("None")
-ax.scatter(zetas,tps,label=r'$t_p(\zeta)\omega_n=\frac{\pi}{\sqrt{1-\zeta²}}$')
+ax.scatter(ζs,tps,label=r'$t_p(\zeta)\omega_n=\frac{\pi}{\sqrt{1-\zeta²}}$')
 ax.set_title('Time peak vs damping ratio')
 ax.set_xlabel(r'$\zeta$')
 ax.set_ylabel(r'$t_p(\zeta)\omega_n$')
@@ -160,16 +212,24 @@ po = 100*np.exp(-np.pi*zeta/np.sqrt(1-zeta**2))
 tp = np.pi/np.sqrt(1-zeta**2)
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
-ax1.plot(zeta,po,label='percent overshoot')
+ax1.plot(zeta,po,label='PO(%)')
 ax1.grid(True)
-ax1.legend()
+ax1.legend(loc='upper left',labelcolor='blue')
 ax1.set_xlabel(r'Damping ration $\zeta$')     
-ax1.set_ylabel('P.O (%)')
+ax1.set_ylabel('P.O (%)',color='blue')
+ax1.tick_params(axis='y', colors='blue')
 ax2 = ax1.twinx()
 ax2.plot(zeta,tp,label=r'$\omega_{n}t_{s}$',color='red')
-ax2.legend()
-ax2.set_ylabel(r'$t_s\omega_n$')
-plt.show()     
+ax2.legend(loc='upper right',labelcolor='red')
+ax2.set_ylabel(r'$t_s\omega_n$',color='red')
+ax2.tick_params(axis='y', colors='red')
+for pos in ['top', 'right']:
+    ax1.spines[pos].set_visible(False)
+    if pos == 'right': pos='left'
+    ax2.spines[pos].set_visible(False)
+    
+ax1.spines['left'].set_color('blue')
+ax2.spines['right'].set_color('red')
 ```
 
 # 4. Effects of third pole and zero on second order system response
@@ -186,7 +246,8 @@ from sympy.abc import s
 
 zeta, gamma = symbols('zeta gamma')
 Q = (s**2+2*zeta*s+1)*(s*gamma+1)
-pprint(roots(Q,s)) 
+rs = list(roots(Q,s).keys())
+sp.Matrix([*rs]).transpose() 
 ```
 
 ![](pics/diag54.svg)
@@ -195,26 +256,27 @@ pprint(roots(Q,s))
 
 ```python
 # run-python
-num1,den1 = ([1],[1,0.9,1])
+s = ct.TransferFunction.s
 tt = np.linspace(0.0,12.0,512)
-sys1 = ct.tf(num1,den1)
-resp2 = ct.step_response(sys1,timepts=tt)
-fig = plt.figure()
-ax = fig.add_subplot(111)
-resp2.plot(ax=ax,label=r'$\frac{1}{s²+0.9s+1}$')
-for third_p in [1/4.5,1.0]:#0.25, 0.5, 0.75, 1.0]:
-	num2,den2 = ([1],[third_p,1])
-	sys2 = ct.tf(num2,den2)
+sys1 = 1/(s**2 + 2*0.45*s +1)
+resp2 = sys1.step_response(tt)
+resp2.plot(label=r'$\frac{1}{s²+0.9s+1}$',title='')
+ax = plt.gca()
+fig = plt.gcf()
+for γ in [1/9,1/4.5,1.0]:#0.25, 0.5, 0.75, 1.0]:
+	sys2 = 1 / (γ * s + 1)
 	sys = ct.series(sys1,sys2)
-	resp1 = ct.step_response(sys,timepts=tt)
-	formula =f"$\\frac{{1}}{{(s^2+0.9s+1)({third_p:.2f} s+1)}}$" 
+	resp1 = sys.step_response(tt)
+	formula =f"$\\frac{{1}}{{(s^2+0.9s+1)({γ:.2f} s+1)}}$" 
 	resp1.plot(ax=ax,label=formula)
-plt.grid()
-plt.title('Third pole effect on the 3nd-order system step response')
-plt.show()
+ax.grid()
+ax.set_title('Third pole effect on the 3nd-order system step response')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
 ```
 
-The response of a third-order system can be approximated by the dominant roots of the second-order system as long as the real part of the dominant roots is less than one tenth of the real part of the third root ($\vert{1\over\gamma}\vert\ge10\vert\zeta\omega_{n}\vert$)
+The response of a third-order system can be approximated by the dominant roots of the second-order system as long as the real part of the dominant roots is less than one tenth of the real part of the third root (${1\over\gamma}\ge10\zeta\omega_{n}$)
 
 + **Effect of the zero:**
 
@@ -227,27 +289,44 @@ And let's examine the effect of this zero as it's moves forward with the followi
 
 ```python
 # run-python
-zeta, wn = 0.45, 1.0
-num1,den1 = ([wn**2],[1,2*zeta*wn,wn**2])
+import pandas as DF
+zeta, wn = 0.7, 1.0
 tt = np.linspace(0.0,12.0,512)
-sys1 = ct.tf(num1,den1)
-resp2 = ct.step_response(sys1,timepts=tt)
-fig = plt.figure()
-ax = fig.add_subplot(111)
-resp2.plot(ax=ax,label=r'$\frac{1}{s²+0.9s+1}$')
-for a in np.array([.5,1.0,2.0,10.0])*zeta*wn:
-	num2,den2 = ([1/a,1],[1])
-	sys2 = ct.tf(num2,den2)
-	sys = ct.series(sys1,sys2)
-	resp1 = ct.step_response(sys,timepts=tt)
-	formula =f"$\\frac{{{1/a:.2f}s+1}}{{(s^2+0.9s+1)}}$" 
-	resp1.plot(ax=ax,label=formula)
+sys1 = wn**2 / ct.parallel(s**2,2*wn*zeta*s,wn**2)
+resp2 = sys1.step_response(tt).plot(label=r'$\frac{1}{s²+0.9s+1}$',title='')
+fig = plt.gcf()
+ax = plt.gca()
+step_info = ct.step_info(sys1)
+performances_keys = ['RiseTime','SettlingTime','Overshoot','PeakTime','SteadyStateValue']
+df_col_names = [*filter(lambda key: key in performances_keys,step_info.keys())]
+df_col_names.insert(0,'a')
+df = DF.DataFrame(columns=df_col_names)
+for key in df.columns:
+    if key == 'a': 
+        df.loc[0,key] = None
+    else:
+        df.loc[0,key] = step_info[key]
+    
+for (i,a) in enumerate(np.array([0.5,1.0,2.0,10])*zeta*wn):
+    sys2 = (s+a)/a
+    sys = ct.series(sys1,sys2)
+    step_info = ct.step_info(sys)
+    for key in df.columns.tolist():
+        if key == 'a': 
+            df.loc[i+1,key] = a
+        else:
+            df.loc[i+1,key] = step_info[key]
+    formula =f"$\\frac{{{1/a:.2f}s+1}}{{(s^2+0.9s+1)}}$" 
+    sys.step_response(tt).plot(ax=ax,label=formula)
 
-plt.axhline(y=0.98,color='k', ls='--',label=r'$1-\delta$')
-plt.axhline(y=1.02,color='k', ls='--',label=r'$1+\delta$')
-plt.grid()
-plt.title('The zero effect on the 2nd-order system step response')
-plt.show()
+# plt.axhline(y=0.98,color='k', ls='--',label=r'$1-\delta$')
+# plt.axhline(y=1.02,color='k', ls='--',label=r'$1+\delta$')
+ax.grid()
+ax.set_title('The zero effect on the 2nd-order system step response')
+ax.legend(loc='lower right')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+df
 ```
 
 As the ratio $a/ζω_{n}$ ­increases, the finite zero moves farther into the left half-plane and away from the poles, and the step response approaches the second-order system response, as expected.
@@ -275,23 +354,22 @@ $$
 
 ```python
 # run-python
-wn, zeta, tau,a=(5,0.6,0.16,2.5)
-num1,den1, num2,den2, num3,den3 =([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
-sys1, sys2,sys3 = [ct.tf(num1,den1),ct.tf(num2,den2),ct.tf(num3,den3)]
+wn, zeta, tau, a = (5,0.6,0.16,2.5)
+s = ct.TransferFunction.s
+sys1, sys2,sys3 = [wn**2*(s+a)/a,1/(tau*s+1),1/(s**2+2*wn*zeta*s+wn**2)]
 sys = ct.series(sys1,sys2,sys3)
 # fig = plt.figure()
 # ax = fig.add_subplot(111,polar=True)
 pzmap = ct.pole_zero_map(sys)
 pzmap.plot(title='Poles-zeros plot for the system',grid=True)
-plt.show()
 ```
 
 ***Step response:***
 
 ```python
 # run-python
-wn, zeta, tau,a, delta=(5,0.6,0.16,2.5,0.02)
-num1,den1, num2,den2, num3,den3 =([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
+wn, zeta, tau, a, delta = (5,0.6,0.16,2.5,0.02)
+num1,den1, num2,den2, num3,den3 = ([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
 sys1, sys2,sys3 = [ct.tf(num1,den1),ct.tf(num2,den2),ct.tf(num3,den3)]
 sys = ct.series(sys1,sys2,sys3)
 fig = plt.figure()
@@ -299,16 +377,16 @@ ax = fig.add_subplot(111)
 sys.step_response().plot(ax=ax,label='with pz')
 sys_stepInfo = ct.step_info(sys)
 sys1_stepInfo = ct.step_info(sys1)
-for key in sys_stepInfo.keys():
-	match key:
-		case 'RiseTime':
-			print(f'RiseTime: {sys_stepInfo['RiseTime']:.4f}s vs {sys1_stepInfo['RiseTime']:.4f}s')
-		case 'SettlingTime':
-			print(f'SettlingTime: {sys_stepInfo['SettlingTime']:.4f} s vs {sys1_stepInfo['SettlingTime']:.4f}s')
-		case 'Overshoot': 
-			print(f'Overshoot: {sys_stepInfo['Overshoot']:.2f} % vs {sys1_stepInfo['Overshoot']:.2f} %')
-		case 'PeakTime': 
-			print(f'Peak time: {sys_stepInfo['PeakTime']:.4f} s vs {sys1_stepInfo['PeakTime']:.4f}s')
+# for key in sys_stepInfo.keys():
+	# match key:
+		# case 'RiseTime':
+		#	print(f'RiseTime: {sys_stepInfo['RiseTime']:.4f}s vs {sys1_stepInfo['RiseTime']:.4f}s')
+		# case 'SettlingTime':
+		#	print(f'SettlingTime: {sys_stepInfo['SettlingTime']:.4f} s vs {sys1_stepInfo['SettlingTime']:.4f}s')
+		# case 'Overshoot': 
+		# 	print(f'Overshoot: {sys_stepInfo['Overshoot']:.2f} % vs {sys1_stepInfo['Overshoot']:.2f} %')
+		# case 'PeakTime': 
+		#	print(f'Peak time: {sys_stepInfo['PeakTime']:.4f} s vs {sys1_stepInfo['PeakTime']:.4f}s')
 sys1.step_response().plot(ax=ax,color='r',label= 'without pz')
 ct.series(sys1,sys2).step_response().plot(ax=ax,linestyle='--',color='k',label= 'with p only')
 ct.series(sys1,sys3).step_response().plot(ax=ax,linestyle='--',color='k',label= 'with z only',alpha=0.5)
@@ -318,7 +396,8 @@ ax.set_ylabel(r'$y(t)$')
 ax.axhline(y=0.98,color='g', ls='--',label=f'{{$1\\pm {delta*100}\\%$}}')
 ax.axhline(y=1.02,color='g', ls='--')
 ax.legend()
-plt.show()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 ```
 
 # 5. s-Plane root location and transient response
@@ -334,58 +413,53 @@ y(t) = u(t) + \sum\limits_{i=1}^{M}A_{i}e^{-\sigma_{i}t}u(t) + \sum\limits_{k=1}
 $$
 Where $D_{k}, \theta_{k}$ are constants that depends on $B_{k}, C_{k}, \alpha_{k} \text{ and  } \omega_{k}$. The transient response is composed of three terms. The steady-state terms, exponential decaying terms and sinusoidal damping terms. As we have noticed earlier, for the output to be stable, the real parts of the inputs must be localized in the left-hand portion of the s-plane.
 
-Control system designers must understand the relationship between a linear system's frequency domain representation, the poles and zeros of its transfer function, and its time-domain response to step inputs. In fields like signal processing and control, analysis and design are often performed in the s-plane, focusing on the system's poles and zeros. On the other hand, system performance is often analyzed by examining time-domain responses, particularly when dealing with control systems.
-
-The control system designer will envision the effects on the step and impulse responses of adding, deleting, or moving poles and zeros of $H_{cl}(s)$ in the s-plane.
-Likewise, the designer should visualize the necessary changes for the poles and zeros of $H_{cl}(s)$, in order to effect desired changes in the step and impulse responses.
+The control system designer must anticipate how adding, removing, or relocating the poles and zeros of  $H_{cl}(s)$ in the complex plane will affect the step and impulse responses. Additionally, they should be able to visualize the necessary adjustments to the poles and zeros of $H_{cl}(s)$ to achieve the desired changes in these responses.
 
 An experienced designer knows that the placement of zeros affects a system's response. The poles of $H_{cl}(s)$ dictate response modes, while the zeros determine the weight of each mode function. For example, moving a zero closer to a pole reduces its contribution to the output. This directly impacts $A_{i}$  and $D_{k}$; a zero near the pole at $s = -\sigma_i$ results in a smaller $A_i$.
 
 
 # 6. Steady-state error and feedback system
 One of the fundamental reasons for using feedback, despite its cost and increased
-complexity, is the attendant improvement in the reduction of the steady-state error of the system. The steady-state error of a stable closed-loop system is usually ­several orders of magnitude smaller than the error of an open-loop system. The system actuating signal, which is a measure of the system error, is denoted as $E_a(s)$.
-Consider a unity negative feedback system. In the absence of external disturbances, and measurement noise, the tracking error is:
+complexity, is the attendant improvement in the reduction of the steady-state error of the system. The steady-state error of a stable closed-loop system is usually ­several orders of magnitude smaller than the error of an open-loop system. 
 
+Consider a unity negative feedback system. In the absence of external disturbances, and measurement noise $(N(s)=T_{d}(s)=0)$, the tracking error is:
 $$
 E(s) = {1\over 1+L(s)}R(S)
 $$
-Using the final value theorem and computing the steady-state tracking error $e_{ss}$ yields:
+Using the final value theorem for computing the steady-state tracking error $e_{ss}$ yields:
 $$
 \lim_{t\rightarrow\infty}e(t) = e_{ss}=\lim_{s\rightarrow0}s E(s)=\lim_{s\rightarrow0}{s R(s)\over 1+L(s)}
 $$
 + **Step input:** The steady-state error for the step input is given by:
 $$
-e_{ss}={A\over 1+L(0)}
+e_{ss}={R_{0}\over 1+L(0)}
 $$
-With $R(s)=\frac{A}{s}$. The steady-state error is completely determined by the loop transfer function $(L(s))$ calculated at the DC frequency $(s=0)$. Let denote $L(0)$ by $K_{p}$ the *position error constant* then the steady-state tracking error is given by:
+With $R(s)=\frac{R_{0}}{s}$. The steady-state error is completely determined by the loop transfer function $L(s)$ considered at DC frequency $(s=0)$. Let denote $L(0)$ by $K_{p}$ the *position error constant* then the steady-state tracking error is given by:
 
 $$
-e_{ss}={A\over 1 + K_{p}}
+e_{ss}={R_{0}\over 1 + K_{p}}
 $$
 
-
-+ **Ramp input:** The steady-state error for the ramp input (velocity) with a slope $A$ is:
++ **Ramp input:** The steady-state error for the ramp input (velocity) with a slope $R_{0}$ is:
 $$
-e_{ss}=\lim_{s\rightarrow0}s E(s)=\lim_{s\rightarrow0}{A\over s+s L(s)}
+e_{ss}=\lim_{s\rightarrow0}s E(s)=\lim_{s\rightarrow0}{R_{0}\over s+s L(s)}
 $$
 we can express $L(s)$ as:
 $$
-L(s) = C(s)P(S) = {K \prod_{i}(s-z_{i})\over s^{N}\prod_{k}(s-p_{k})}
+L(s) = C(s)P(S) = {K \prod\limits_{i}(s-z_{i})\over s^{N}\prod\limits_{k}(s-p_{k})}
 $$
 if $N=0$ then $e_{ss}\rightarrow \infty$ but if $N=1$ then: 
 $$
 e_{ss}={A\over K_{v}}
-$$ where $K_{v}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *velocity error constant*. If now $N\ge2$ then $e_{ss}\rightarrow0$
+$$ where $K_{v}= {K\prod\limits_{i}z_{i}\over\prod\limits_{k}p_{k}}$ is the *velocity error constant*. The $e_{ss}\rightarrow0$ when $N\geq 2$
 
-
-+ **Acceleration input:** When the system input is $r(t)=\frac{At²}{2}$, the steady-state error is:
++ **Acceleration input:** When the system input is $r(t)=\frac{R_{0}t²}{2}$, the steady-state error is:
 $$
-e_{ss}={A\over s² \lim\limits_{s\rightarrow0} L(s)}
+e_{ss}=\lim\limits_{s\rightarrow0}{R_{0}\over s^{2}(1+L(s))}
 $$
 For $N<2$ the $e_{ss}\rightarrow\infty$. If $N=2$ then:
 $$
-e_{ss}=A/K_{a}
+e_{ss}=R_{0}/K_{a}
 $$Where $K_{a}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *acceleration error constant*. If $N>2\Rightarrow e_{ss}\rightarrow 0$.
 
 >Control systems are often described in terms of their type number and the error constants, $K_p$ , $K_v$ , and $K_a$.
@@ -416,15 +490,16 @@ $$
 # run-python
 import warnings  
 warnings.filterwarnings("ignore")
-from scipy.integrate import quad 
-num, den = ([1],[1,.65,1])
+from scipy.integrate import quad
+from scipy.interpolate import CubicSpline
+num, den = ([1],[1,.45,1])
 sys = ct.tf(num,den)
+ts = ct.step_info(sys,SettlingTimeThreshold=0.05)['SettlingTime']
 tt, y = sys.step_response()
 error = 1.0 - np.array(y)
 sq_error = error**2
-ise = [] 
-for tau in tt[1:]:
-	ise.append(quad(lambda t: np.interp(t,tt,sq_error), tt[0],tau)[0])
+cs = CubicSpline(tt,error)
+ise = [quad(lambda t: cs(t)**2, tt[0],tau)[0] for tau in np.linspace(0,ts,512)]
 fig = plt.figure()
 ax1 = fig.add_subplot(311)
 ax1.plot(tt,y,label='Step response')
@@ -434,16 +509,18 @@ ax1.axhline(y=1.0,color='g', ls='--', label='Target')
 ax1.grid()
 ax1.legend()
 ax2 = fig.add_subplot(312, sharex=ax1)
-ax2.plot(tt,error, label='Error',ls='dotted',color='red',alpha=0.9)
-ax2.plot(tt,sq_error, label='Square error',ls='dashed',color='red', alpha=0.7)
+ax2.plot(tt,cs(tt), label='Error',ls='dotted',color='red',alpha=0.9)
+ax2.plot(tt,cs(tt)**2, label='Square error',ls='dashed',color='red', alpha=0.7)
 ax2.grid()
 ax2.legend()
 ax3 = fig.add_subplot(313,sharex=ax1)
-ax3.plot(tt[1:],ise, label='ISE',ls='dashdot',color='red',alpha=0.5)
+ax3.plot(np.linspace(0,ts,512),ise, label='ISE',ls='dashdot',color='red',alpha=0.5)
 ax3.grid()
 ax3.legend()
 fig.tight_layout()
-plt.show()
+for ax in [ax1,ax2,ax3]:
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 ```
 
 This criterion distinguishes between excessively over-damped and excessively under-damped systems. The minimum value of the integral occurs at a compromise value of the damping. The Integral of Squared Error (ISE) is mathematically convenient for both analytical and computational purposes. 
@@ -495,7 +572,8 @@ ax.set_ylabel(r'$\mathrm{ISE}(K_3)$')
 ax.set_title('Performance Index: Integral of square error')
 ax.grid()
 ax.legend()
-plt.show()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 ```
 
 The optimum system response according to the value of $K_{3}$ that minimize the ISE is given below:
@@ -511,7 +589,8 @@ sys.step_response().plot(ax=ax)
 ax.set_title(r'System response for $K_3=\sqrt{10}$')
 ax.set_ylabel(r'$y(t)$')
 ax.grid()
-plt.show()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 ```
 
 # 8. Simplification of linear system
@@ -534,19 +613,26 @@ zs,ps1,ps2,Ks1 = [],[0,-2,-30],[0,-2],K
 Ks2 = K/-ps1[-1]
 H1 = ct.zpk(zs,ps1,Ks1)
 H2 = ct.zpk(zs,ps2,Ks2)
-print(H1)
-print(H2)
+H1
+```
+
+```python
+H2
+```
+
+```python
 Y1,_,w1 = H1.frequency_response() 
 Y2,_,w2 = H2.frequency_response()
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(w1,20*np.log10(Y1),label='3rd-order transfer function') 
-ax.plot(w2,20*np.log10(Y2),label='reduced transfer function',ls='dashed')
-ax.grid()
+ax.semilogx(w1,20*np.log10(Y1),label='3rd-order transfer function') 
+ax.semilogx(w2,20*np.log10(Y2),label='reduced transfer function',ls='dashed')
+ax.grid(which='both')
 ax.legend()
 ax.set_xscale('log')
 ax.set_title('Frequency response for a 3rd-order system and its reduced form')
-plt.show() 
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 ```
 
 Consider the high-order system be described by the transfer function:
@@ -579,6 +665,19 @@ $$
 H_{cl(s)}= {6\over s³+6s²+11s+6}
 $$
 
+```python
+# run-python
+s = ct.TransferFunction.s
+H = 1 / (s**3 + 6*s**2 + 11*s + 6)
+Hr = (0.004223 * s**2 - 0.04253*s + 0.2368)/(s**2 + 2.343*s + 1.421)
+H.step_response().plot(title='',label='H')
+ax = plt.gca()
+Hr.step_response().plot(ax=ax,label=r'$H_r$')
+ax.grid()
+ax.set_title('')
+ax.set_ylabel(r'$y_{out}$')
+[ax.spines[pos].set_visible(False) for pos in ['top', 'right']];
+```
 
 # 9. Design example (attitude control of an airplane)
 Every time we fly on a commercial airliner, we benefit from automatic control systems that enhance aircraft handling and assist pilots, especially during long flights. The relationship between flight and controls began with the Wright brothers, who used wind tunnels and systematic design approaches to achieve powered flight, contributing significantly to their success.

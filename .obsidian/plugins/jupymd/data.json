@@ -1,7 +1,7 @@
 {
   "autoSync": true,
   "bidirectionalSync": true,
-  "pythonInterpreter": "/home/belkebir/py314/bin/python",
-  "notebookEditorCommand": "/home/belkebir/py314/bin/jupyter-lab",
+  "pythonInterpreter": "C:/Users/belkebir/py311/Scripts/python.exe",
+  "notebookEditorCommand": "C:/Users/belkebir/py311/Scripts/jupyter-lab",
   "enableCodeBlocks": true
 }
