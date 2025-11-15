@@ -244,17 +244,27 @@
               "icon": "checkmark",
               "title": "Todo List"
             }
+          },
+          {
+            "id": "b18b92b338942e96",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
         ],
-        "currentTab": 9
+        "currentTab": 10
       }
     ],
     "direction": "horizontal",
-    "width": 207.5,
-    "collapsed": true
+    "width": 207.5
   },
   "left-ribbon": {
     "hiddenItems": {
+      "github-sync:Sync with Remote": false,
       "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
@@ -275,10 +285,11 @@
       "smart-connections:Smart Connections: Open connections view": false,
       "smart-connections:Smart Connections: Open random connection": true,
       "copilot:Open Copilot Chat": false,
-      "print:Print note": false
+      "print:Print note": false,
+      "markdown-importer:Open format converter": false
     }
   },
-  "active": "5878331dd7b81220",
+  "active": "95a435d5685efe86",
   "lastOpenFiles": [
     "TD02.md",
     "Stability of linear feedback system.md",
