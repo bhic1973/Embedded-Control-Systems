@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "884894ba2be8acec",
+        "id": "c376a5256b024731",
         "type": "tabs",
         "children": [
           {
-            "id": "5878331dd7b81220",
+            "id": "c2f1f934f5a3222b",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -289,10 +289,10 @@
       "markdown-importer:Open format converter": false
     }
   },
-  "active": "95a435d5685efe86",
+  "active": "c2f1f934f5a3222b",
   "lastOpenFiles": [
-    "TD02.md",
     "Stability of linear feedback system.md",
+    "TD02.md",
     "model_reduction_matlab.ipynb",
     "Feedback control system.pdf",
     "pics/cap27.png",
