@@ -44,5 +44,6 @@
   "better-export-pdf",
   "print",
   "github-sync",
-  "jupymd"
+  "jupymd",
+  "latex-to-unicode"
 ]

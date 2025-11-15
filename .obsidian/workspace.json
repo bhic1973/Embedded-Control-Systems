@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "c1f2f1719813b78a",
+        "id": "884894ba2be8acec",
         "type": "tabs",
         "children": [
           {
-            "id": "465fc9c0b8aee472",
+            "id": "5878331dd7b81220",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -80,8 +80,8 @@
             "state": {
               "type": "file-tree-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "file-tree-view"
+              "icon": "sheets-in-box",
+              "title": "File Tree"
             }
           },
           {
@@ -90,8 +90,8 @@
             "state": {
               "type": "file-tree-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "file-tree-view"
+              "icon": "sheets-in-box",
+              "title": "File Tree"
             }
           },
           {
@@ -278,13 +278,26 @@
       "print:Print note": false
     }
   },
-  "active": "465fc9c0b8aee472",
+  "active": "5878331dd7b81220",
   "lastOpenFiles": [
-    "pics/cap34.png",
+    "TD02.md",
+    "Stability of linear feedback system.md",
+    "model_reduction_matlab.ipynb",
+    "Feedback control system.pdf",
+    "pics/cap27.png",
+    "pics/cap26.png",
+    "pics/cap25.png",
+    "pics/cap24.png",
+    "pics/cap23.png",
+    "pics/cap22.png",
+    "pics/cap21.png",
+    "pics/cap20.png",
+    "pics/cap19.png",
+    "pics/cap18.png",
+    "Performance of a feedback system.md",
     "Feedback control system.md",
     "Feedback control system_tmp_jupytext_11556.ipynb",
     "Feedback control system.ipynb",
-    "Performance of a feedback system.md",
     "Performance of a feedback system_tmp_jupytext_1348.ipynb",
     "Performance of a feedback system_tmp_jupytext_8684.ipynb",
     "Performance of a feedback system_tmp_jupytext_20416.ipynb",
@@ -292,26 +305,13 @@
     "Performance of a feedback system.ipynb",
     "State space models.md",
     "State space models.pdf",
-    "Sim/note.txt",
-    "pics/diag79.svg",
-    "pics/diag78.svg",
-    "pics/diag77.svg",
-    "example.drawio",
     "Quizs/Test 01.md",
     "Mason formula.md",
     "Mathematical Models of systems.md",
-    "pics/fig1.png",
     "Introduction to control system.md",
     "Quiz 02.md",
     "Quiz 01.md",
-    "pics/diag76.svg",
-    "pics/diag75.svg",
-    "pics/diag74.svg",
-    "pics/diag73.svg",
     "diag36svg.md",
-    "Stability of linear feedback system.md",
-    "Pasted image 20250921142216.png",
-    "TD02.md",
     "copilot/copilot-custom-prompts/Rewrite as tweet thread.md",
     "copilot/copilot-custom-prompts/Rewrite as tweet.md",
     "copilot/copilot-custom-prompts/Remove URLs.md",
@@ -324,7 +324,6 @@
     "copilot/copilot-custom-prompts/Simplify.md",
     "copilot/copilot-custom-prompts/Summarize.md",
     "copilot/copilot-custom-prompts/Translate to Chinese.md",
-    "copilot/copilot-custom-prompts/Fix grammar and spelling.md",
-    "pics/diag72.svg"
+    "copilot/copilot-custom-prompts/Fix grammar and spelling.md"
   ]
 }
