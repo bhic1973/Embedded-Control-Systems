@@ -104,7 +104,8 @@
               "title": "File Tree"
             }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -291,6 +292,7 @@
   },
   "active": "c2f1f934f5a3222b",
   "lastOpenFiles": [
+    "pics/diag80.svg",
     "Stability of linear feedback system.md",
     "TD02.md",
     "model_reduction_matlab.ipynb",
