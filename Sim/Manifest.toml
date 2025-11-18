@@ -2,7 +2,11 @@
 
 julia_version = "1.12.1"
 manifest_format = "2.0"
+<<<<<<< HEAD
 project_hash = "aeeeea3f64823a094eab80e70867e855078f6ab7"
+=======
+project_hash = "16920bef05d234bc94fcf99fde2d4a38818d4bdd"
+>>>>>>> fa156be177991b2f1aac6ecae0c5fb5957f0463a
 
 [[deps.ADTypes]]
 git-tree-sha1 = "8be2ae325471fc20b11c27bb34b518541d07dd3a"
@@ -1811,12 +1815,15 @@ deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "3cce3511ca2c6f87b19c34ffc623417ed2798cbd"
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.10+0"
+<<<<<<< HEAD
 
 [[deps.MethodOfLines]]
 deps = ["Combinatorics", "DiffEqBase", "DomainSets", "IfElse", "Interpolations", "Latexify", "LinearAlgebra", "ModelingToolkit", "OrdinaryDiffEq", "PDEBase", "PrecompileTools", "RuntimeGeneratedFunctions", "SciMLBase", "StaticArrays", "SymbolicIndexingInterface", "SymbolicUtils", "Symbolics", "TermInterface"]
 git-tree-sha1 = "ec5b791da14e103fe0c0d1f27ee44d7a4f8e0293"
 uuid = "94925ecb-adb7-4558-8ed8-f975c56a0bf4"
 version = "0.11.9"
+=======
+>>>>>>> fa156be177991b2f1aac6ecae0c5fb5957f0463a
 
 [[deps.Missings]]
 deps = ["DataAPI"]
@@ -2318,12 +2325,6 @@ version = "1.6.0"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.44.0+1"
-
-[[deps.PDEBase]]
-deps = ["DomainSets", "ModelingToolkit", "SciMLBase", "SymbolicIndexingInterface", "SymbolicUtils", "Symbolics"]
-git-tree-sha1 = "dc3f4a0efd478a391dbffd987c7e6b469c874678"
-uuid = "a7812802-0625-4b9e-961c-d332478797e5"
-version = "0.1.19"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
