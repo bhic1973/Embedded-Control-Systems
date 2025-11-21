@@ -1,12 +1,13 @@
 ---
+title: 1. Introduction
 jupyter:
   jupytext:
-    cell_metadata_filter: -all
+    cell_metadata_filter: '-all'
     formats: ipynb,md,qmd
     text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.3'
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
       jupytext_version: 1.18.1
   kernelspec:
     display_name: Python 3 (ipykernel)
@@ -14,7 +15,7 @@ jupyter:
     name: python3
 ---
 
-```python
+```{python}
 import numpy as np
 import sympy as sp
 import control as ct
@@ -23,7 +24,6 @@ from IPython.display import display
 from matplotlib import pyplot as plt
 ```
 
-# 1. Introduction
 The main advantage of feedback control systems is their ability to adjust both transient and steady-state performance. Analyzing and designing these systems involves defining performance and adjusting controller parameters for desired outcomes. Control systems exhibit transient responses that fade over time and steady-state responses that persist. Design specifications include time-response indices and steady-state accuracy, which can be revised for flexibility. These adjustments can be illustrated graphically.
 
 ![](pics/diag51.svg)
@@ -40,7 +40,7 @@ Time-domain performance specifications are crucial for control systems, especial
 | Ramp        | $r(t)=\begin{cases}At,\;t>0\\0,\;t\leq0\end{cases}$  | ${A\over s²}$  |
 | Parabolic   | $r(t)=\begin{cases}At²,\;t>0\\0,\;t\leq0\end{cases}$ | ${2A\over s³}$ |
 
-```python
+```{python}
 # run-python
 A=1.0
 tt = np.linspace(-1,1,256)
@@ -76,7 +76,7 @@ Where $\omega_n$ is the natural frequency and $\zeta$ the damping ratio.
 
 + **Impulse response of the 2nd-order system:**
 
-```python
+```{python}
 # run-python
 wn = 1.0
 num = [wn**2]
@@ -86,7 +86,7 @@ sys1 = wn**2 * s**0
 sys2 = 1 / s
 ```
 
-```python
+```{python}
 @interact(ζ=(0.1, 2.0, 0.2))
 def plot_impulse_response(ζ=0.7):
     sys3 = 1 / (s + 2 * wn * ζ) 
@@ -102,7 +102,7 @@ def plot_impulse_response(ζ=0.7):
 
 + **Step response of the 2nd-order system:**
 
-```python
+```{python}
 # run-python
 @interact(ζ=(0.1, 2.0, 0.2))
 def plot_step_response(ζ=0.7):
@@ -123,7 +123,7 @@ def plot_step_response(ζ=0.7):
 
 The output of the 2nd-order system is given by calculating the inverse transform of the transfer function multiplied by the reference signal $R(s)={1\over s}$:
 
-```python
+```{python}
 s, t, ωₙ, ζ = sp.symbols('s t ωₙ ζ')
 H = ωₙ**2 / s / (s**2 + 2 * ωₙ * ζ * s + ωₙ**2)
 print("\n\n")
@@ -131,7 +131,8 @@ with sp.assuming(ζ < 1, ζ > 0 , ωₙ > 0):
     y = sp.simplify(sp.inverse_laplace_transform(H,s,t))
 y 
 ```
-```python
+
+```{python}
 @interact(zeta=(0.1,2.0,0.2))
 def plot_symbolic_step_response(zeta=0.7):
     p = sp.plot(y.subs(ωₙ,1.0).subs(ζ,zeta),(t,0.0,14.0),show=False)
@@ -182,7 +183,7 @@ $$
 
 + ***Pick time***
 
-```python
+```{python}
 # run-python
 def tp(ζ):
 	return np.pi/np.sqrt(1-ζ**2)
@@ -205,7 +206,7 @@ plt.show()
 
 2. The *Closeness of response* to the desired response also represented by the percent overshoot and settling time.  
 
-```python
+```{python}
 # run-python
 zeta = np.linspace(0.1,0.9,100)
 po = 100*np.exp(-np.pi*zeta/np.sqrt(1-zeta**2))
@@ -239,7 +240,7 @@ H_{cl}(s)={1\over (s²+2\zeta s+1)(\gamma s+1)}
 $$
 The poles of this system are given below:
 
-```python
+```{python}
 # run-python
 from sympy import simplify, symbols, pprint, roots
 from sympy.abc import s
@@ -254,7 +255,7 @@ sp.Matrix([*rs]).transpose()
 
 + **Effect of the third pole $-\frac{1}{\gamma}$ on the unit step system response**
 
-```python
+```{python}
 # run-python
 s = ct.TransferFunction.s
 tt = np.linspace(0.0,12.0,512)
@@ -273,7 +274,6 @@ ax.grid()
 ax.set_title('Third pole effect on the 3nd-order system step response')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-
 ```
 
 The response of a third-order system can be approximated by the dominant roots of the second-order system as long as the real part of the dominant roots is less than one tenth of the real part of the third root (${1\over\gamma}\ge10\zeta\omega_{n}$)
@@ -287,7 +287,7 @@ H_{cl}(s)={{\omega_{n}²\over a}(s+a)\over s²+2\zeta\omega_{n}s+\omega_{n}²}
 $$
 And let's examine the effect of this zero as it's moves forward with the following values: $\frac{a}{\zeta\omega_{n}}=0.5,1.0,2.0,10.0$ 
 
-```python
+```{python}
 # run-python
 import pandas as DF
 zeta, wn = 0.7, 1.0
@@ -332,7 +332,6 @@ df
 As the ratio $a/ζω_{n}$ ­increases, the finite zero moves farther into the left half-plane and away from the poles, and the step response approaches the second-order system response, as expected.
 The correlation of the time-domain response of a system with the s-plane ­location of the poles of the closed-loop transfer function is a key concept in understanding system performance in the closed-loop.
 
-
 ***Exercise: Parameters selection***
 A single-loop feedback control system is shown in the figure below: 
 
@@ -340,7 +339,6 @@ A single-loop feedback control system is shown in the figure below:
 
 We need to select the controller gain K and the parameter p so that the time-domain specifications are satisfied. The transient response to a unit step is specified to have a percent overshoot of $PO ≤ 5\%$ and a settling time to within $2\%$ of the final value of
 $t_s ≤ 4 s$. Find the parameters $K$ and $p$ that satisfy these requirements.
-
 
 + **Combined impact of zero and third pole on 2nd-order closed-loop system unit step response**
   The transfer function is given now by the following expression:
@@ -352,7 +350,7 @@ $$
 ***Poles and zeros location:***
   
 
-```python
+```{python}
 # run-python
 wn, zeta, tau, a = (5,0.6,0.16,2.5)
 s = ct.TransferFunction.s
@@ -366,7 +364,7 @@ pzmap.plot(title='Poles-zeros plot for the system',grid=True)
 
 ***Step response:***
 
-```python
+```{python}
 # run-python
 wn, zeta, tau, a, delta = (5,0.6,0.16,2.5,0.02)
 num1,den1, num2,den2, num3,den3 = ([wn**2],[1,2*wn*zeta,wn**2],[1],[tau,1],[1/a,1],[1])
@@ -417,7 +415,6 @@ The control system designer must anticipate how adding, removing, or relocating 
 
 An experienced designer knows that the placement of zeros affects a system's response. The poles of $H_{cl}(s)$ dictate response modes, while the zeros determine the weight of each mode function. For example, moving a zero closer to a pole reduces its contribution to the output. This directly impacts $A_{i}$  and $D_{k}$; a zero near the pole at $s = -\sigma_i$ results in a smaller $A_i$.
 
-
 # 6. Steady-state error and feedback system
 One of the fundamental reasons for using feedback, despite its cost and increased
 complexity, is the attendant improvement in the reduction of the steady-state error of the system. The steady-state error of a stable closed-loop system is usually ­several orders of magnitude smaller than the error of an open-loop system. 
@@ -464,14 +461,12 @@ $$Where $K_{a}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *acceleration error
 
 >Control systems are often described in terms of their type number and the error constants, $K_p$ , $K_v$ , and $K_a$.
 
-
 # 7. Performance indices
 In modern control theory, we can define the required performance of a system quantitatively. This allows us to calculate or measure a performance index, which can then be used to assess the system's performance. These quantitative measures are extremely valuable for both the design and operation of control systems.
 
 A system is considered an optimal control system when its parameters are adjusted to ensure that the performance index reaches an extremum, typically a minimum value. For a performance index to be useful, it must always be a positive number or zero. The best system is defined as the one that minimizes this index.
 
 > **A performance index quantitatively measures system performance, emphasizing key specifications.** 
-
 
 ## 7.1. Integral of square of the error (ISE) as performance index
 A common performance index is the ISE defined as:
@@ -486,7 +481,7 @@ $$
 H_{cl}(s) = {1 \over s² +0.65s +1}
 $$
 
-```python
+```{python}
 # run-python
 import warnings  
 warnings.filterwarnings("ignore")
@@ -539,7 +534,6 @@ $$
 $$ 
 where $f$ is a function of the error, input, output and time.
 
-
 ***Example 2:***
 Consider a telescope pointing control system shown in the figure below:
 ![](pics/diag56.svg)
@@ -558,7 +552,7 @@ $$
 \mathrm{ISE}=\int_{0}^{\infty}\frac{10}{\beta²}e^{-0.5K_{3}t}\left(\frac{1}{2} - \frac{1}{2}\sin(\beta+2\psi)\right)dt=\frac{1}{K_{3}}+0.1K_{3}
 $$
 
-```python
+```{python}
 # run-python
 K3 = np.linspace(1,10,1024)
 ise = 1/K3 + 0.1*K3
@@ -578,7 +572,7 @@ ax.spines['right'].set_visible(False)
 
 The optimum system response according to the value of $K_{3}$ that minimize the ISE is given below:
 
-```python
+```{python}
 # run-python
 K1,K3,K1K2Kp=0.5,np.sqrt(10),2.5
 num, den = [1,K1*K3,0], [1, K1*K3,K1K2Kp]
@@ -606,7 +600,7 @@ $$
 H_{cl,r}(s)=\frac{K}{30}\frac{1}{s(s+2)}
 $$
 
-```python
+```{python}
 # run-python
 K = 1
 zs,ps1,ps2,Ks1 = [],[0,-2,-30],[0,-2],K
@@ -616,11 +610,11 @@ H2 = ct.zpk(zs,ps2,Ks2)
 H1
 ```
 
-```python
+```{python}
 H2
 ```
 
-```python
+```{python}
 Y1,_,w1 = H1.frequency_response() 
 Y2,_,w2 = H2.frequency_response()
 fig = plt.figure()
@@ -665,7 +659,7 @@ $$
 H_{cl(s)}= {6\over s³+6s²+11s+6}
 $$
 
-```python
+```{python}
 # run-python
 s = ct.TransferFunction.s
 H = 1 / (s**3 + 6*s**2 + 11*s + 6)
