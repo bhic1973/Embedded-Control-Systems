@@ -1,5 +1,5 @@
 ---
-title: 1. Introduction
+title: Performance of the feedback control system
 jupyter:
   jupytext:
     cell_metadata_filter: '-all'
@@ -15,6 +15,7 @@ jupyter:
     name: python3
 ---
 
+
 ```{python}
 import numpy as np
 import sympy as sp
@@ -24,6 +25,7 @@ from IPython.display import display
 from matplotlib import pyplot as plt
 ```
 
+# Introduction
 The main advantage of feedback control systems is their ability to adjust both transient and steady-state performance. Analyzing and designing these systems involves defining performance and adjusting controller parameters for desired outcomes. Control systems exhibit transient responses that fade over time and steady-state responses that persist. Design specifications include time-response indices and steady-state accuracy, which can be revised for flexibility. These adjustments can be illustrated graphically.
 
 ![](pics/diag51.svg)
@@ -348,7 +350,6 @@ $$
   Let's take $\zeta\omega_{n}=3,\, \tau=0.16 \text{ and }a=2.5$
 
 ***Poles and zeros location:***
-  
 
 ```{python}
 # run-python

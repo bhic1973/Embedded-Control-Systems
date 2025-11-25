@@ -14,6 +14,23 @@ jupyter:
     name: python3
 ---
 
+---
+title: Performance of the feedback control system
+jupyter:
+  jupytext:
+    cell_metadata_filter: '-all'
+    formats: ipynb,md,qmd,pdf
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.18.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+---
+
 ```python
 import numpy as np
 import sympy as sp
@@ -23,7 +40,8 @@ from IPython.display import display
 from matplotlib import pyplot as plt
 ```
 
-# 1. Introduction
+<!-- #region -->
+# Introduction
 The main advantage of feedback control systems is their ability to adjust both transient and steady-state performance. Analyzing and designing these systems involves defining performance and adjusting controller parameters for desired outcomes. Control systems exhibit transient responses that fade over time and steady-state responses that persist. Design specifications include time-response indices and steady-state accuracy, which can be revised for flexibility. These adjustments can be illustrated graphically.
 
 ![](pics/diag51.svg)
@@ -39,6 +57,7 @@ Time-domain performance specifications are crucial for control systems, especial
 | Step        |  $r(t)=\begin{cases}A,\;t>0\\0,\;t\leq0\end{cases}$  |  ${A\over s}$  |
 | Ramp        | $r(t)=\begin{cases}At,\;t>0\\0,\;t\leq0\end{cases}$  | ${A\over s²}$  |
 | Parabolic   | $r(t)=\begin{cases}At²,\;t>0\\0,\;t\leq0\end{cases}$ | ${2A\over s³}$ |
+<!-- #endregion -->
 
 ```python
 # run-python
@@ -131,6 +150,7 @@ with sp.assuming(ζ < 1, ζ > 0 , ωₙ > 0):
     y = sp.simplify(sp.inverse_laplace_transform(H,s,t))
 y 
 ```
+
 ```python
 @interact(zeta=(0.1,2.0,0.2))
 def plot_symbolic_step_response(zeta=0.7):
@@ -273,7 +293,6 @@ ax.grid()
 ax.set_title('Third pole effect on the 3nd-order system step response')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
-
 ```
 
 The response of a third-order system can be approximated by the dominant roots of the second-order system as long as the real part of the dominant roots is less than one tenth of the real part of the third root (${1\over\gamma}\ge10\zeta\omega_{n}$)
@@ -332,7 +351,6 @@ df
 As the ratio $a/ζω_{n}$ ­increases, the finite zero moves farther into the left half-plane and away from the poles, and the step response approaches the second-order system response, as expected.
 The correlation of the time-domain response of a system with the s-plane ­location of the poles of the closed-loop transfer function is a key concept in understanding system performance in the closed-loop.
 
-
 ***Exercise: Parameters selection***
 A single-loop feedback control system is shown in the figure below: 
 
@@ -340,7 +358,6 @@ A single-loop feedback control system is shown in the figure below:
 
 We need to select the controller gain K and the parameter p so that the time-domain specifications are satisfied. The transient response to a unit step is specified to have a percent overshoot of $PO ≤ 5\%$ and a settling time to within $2\%$ of the final value of
 $t_s ≤ 4 s$. Find the parameters $K$ and $p$ that satisfy these requirements.
-
 
 + **Combined impact of zero and third pole on 2nd-order closed-loop system unit step response**
   The transfer function is given now by the following expression:
@@ -350,7 +367,7 @@ $$
   Let's take $\zeta\omega_{n}=3,\, \tau=0.16 \text{ and }a=2.5$
 
 ***Poles and zeros location:***
-  
+
 
 ```python
 # run-python
@@ -417,7 +434,6 @@ The control system designer must anticipate how adding, removing, or relocating 
 
 An experienced designer knows that the placement of zeros affects a system's response. The poles of $H_{cl}(s)$ dictate response modes, while the zeros determine the weight of each mode function. For example, moving a zero closer to a pole reduces its contribution to the output. This directly impacts $A_{i}$  and $D_{k}$; a zero near the pole at $s = -\sigma_i$ results in a smaller $A_i$.
 
-
 # 6. Steady-state error and feedback system
 One of the fundamental reasons for using feedback, despite its cost and increased
 complexity, is the attendant improvement in the reduction of the steady-state error of the system. The steady-state error of a stable closed-loop system is usually ­several orders of magnitude smaller than the error of an open-loop system. 
@@ -464,14 +480,12 @@ $$Where $K_{a}= {K\prod_{i}z_{i}\over\prod_{k}p_{k}}$ is the *acceleration error
 
 >Control systems are often described in terms of their type number and the error constants, $K_p$ , $K_v$ , and $K_a$.
 
-
 # 7. Performance indices
 In modern control theory, we can define the required performance of a system quantitatively. This allows us to calculate or measure a performance index, which can then be used to assess the system's performance. These quantitative measures are extremely valuable for both the design and operation of control systems.
 
 A system is considered an optimal control system when its parameters are adjusted to ensure that the performance index reaches an extremum, typically a minimum value. For a performance index to be useful, it must always be a positive number or zero. The best system is defined as the one that minimizes this index.
 
 > **A performance index quantitatively measures system performance, emphasizing key specifications.** 
-
 
 ## 7.1. Integral of square of the error (ISE) as performance index
 A common performance index is the ISE defined as:
@@ -538,7 +552,6 @@ $$
 \mathrm{I}=\int_{0}^{T}f(e(t), r(t), y(t),t)dt
 $$ 
 where $f$ is a function of the error, input, output and time.
-
 
 ***Example 2:***
 Consider a telescope pointing control system shown in the figure below:
