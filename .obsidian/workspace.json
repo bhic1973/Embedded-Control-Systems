@@ -25,13 +25,11 @@
             "id": "ff0466d83cf345e9",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "pdf",
               "state": {
-                "file": "Quizs/Quiz 03.md",
-                "mode": "source",
-                "source": false
+                "file": "Quizs/Quiz 03.pdf"
               },
-              "icon": "lucide-file",
+              "icon": "lucide-file-text",
               "title": "Quiz 03"
             }
           }
@@ -305,10 +303,12 @@
   },
   "active": "ff0466d83cf345e9",
   "lastOpenFiles": [
+    "Sim/Quiz03.json",
+    "Quizs/Quiz 03.md",
+    "Quizs/Quiz 03.pdf",
     "Quizs/Quiz 01.pdf",
     "Quizs/Test 01.md",
     "Stability of linear feedback system.md",
-    "Quizs/Quiz 03.md",
     "Untitled4.ipynb",
     "Untitled3.ipynb",
     "Untitled2.ipynb",
@@ -330,7 +330,6 @@
     "pics/cap19.png",
     "Performance of a feedback system.md",
     "Feedback control system.md",
-    "Feedback control system_tmp_jupytext_11556.ipynb",
     "State space models.md",
     "Mason formula.md",
     "Mathematical Models of systems.md",

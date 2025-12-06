@@ -1,12 +1,14 @@
 
 
 ### Course: Embedded control system 
-### Professor: H. Belkebir 
-### Date: 2025-11-21
+### Professor: Hicham BELKEBIR 
+### Date: 2025-11-23
 
-| Nom |     |     |     | Prénom |     |     |     |
-| :-- | --- | --- | --- | ------ | --- | --- | --- |
-|     |     |     |     |        |     |     |     |
+| Nom : |     |     |     | Prénom : |     |     |     |
+| :---- | --- | --- | --- | -------- | --- | --- | --- |
+|       |     |     |     |          |     |     |     |
+
+
 
 ## Questionnaire à Choix Multiples (QCM)
 
@@ -38,7 +40,7 @@
 3. Quelle est la transformée de Laplace $R(s)$ de l'entrée Rampe $r(t)$ lorsque $r(t)=At$ pour $t>0$ ?
     
     - [ ] A. $\frac{A}{s}$
-    - [ ] **B. $\frac{A}{s^2}$.**
+    - [ ] B. $\frac{A}{s^2}$.
     - [ ] C. $\frac{2A}{s^3}$
     - [ ] D. $\frac{1}{s}$
 
